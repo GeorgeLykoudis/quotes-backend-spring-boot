@@ -11,6 +11,18 @@ services:
     volumes:
       - "./src/main/scripts/mysql-setup.sql:/docker-entrypoint-initdb.d/1.sql"
       - "./mysql-data:/var/lib/mysql"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quote_app
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+    depends_on:
+      - db
 
 volumes:
   mysql-data:
+    driver: local
