@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +36,13 @@ public class QuoteExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, List<String>>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest().body(getErrorsMap(Collections.singletonList(EMPTY_BODY_MESSAGE)));
+    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest().body(getErrorsMap(EMPTY_BODY_MESSAGE));
     }
 
     @ExceptionHandler(QuoteNotFoundException.class)
-    public ResponseEntity<Map<String, List<String>>> handleQuoteNotFoundException(QuoteNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorsMap(Collections.singletonList(ex.getMessage())));
+    public ResponseEntity<Map<String, String>> handleQuoteNotFoundException(QuoteNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorsMap(ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

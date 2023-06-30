@@ -6,14 +6,17 @@ import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.service.QuoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author George Lykoudis
@@ -37,8 +40,33 @@ public class QuoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<QuoteEntity> getQuoteById(@Valid @PathVariable("id") Long id) {
+    public ResponseEntity<QuoteResponseDto> getQuoteById(@Valid @PathVariable("id") Long id) {
         QuoteEntity quote = quoteService.findQuoteById(id);
-        return ResponseEntity.ok(quote);
+        QuoteResponseDto quoteResponse = QuoteResponseDto.createQuote(quote);
+        return ResponseEntity.ok(quoteResponse);
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<QuoteResponseDto> updateQuoteById(@Valid @PathVariable("id") Long id,
+                                                            @Valid @RequestBody QuoteRequestDto quoteRequestDto) {
+        QuoteEntity quote = quoteService.updateQuoteById(id, quoteRequestDto);
+        QuoteResponseDto quoteResponse = QuoteResponseDto.createQuote(quote);
+        return ResponseEntity.ok(quoteResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteQuoteById(@Valid @PathVariable("id") Long id) {
+        quoteService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<QuoteResponseDto>> findQuotes() {
+        List<QuoteResponseDto> quotes = quoteService.findAllDtos();
+        if (quotes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(quotes);
     }
 }
