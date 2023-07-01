@@ -19,7 +19,9 @@ public interface QuoteService {
 
     void deleteById(Long id);
 
-    List<QuoteEntity> findAll();
-
     List<QuoteResponseDto> findAllDtos();
+
+    List<QuoteResponseDto> findAllDtos(int page, int pageSize);
+
+    QuoteEntity findRandomQuote();
 }

@@ -69,4 +69,21 @@ public class QuoteController {
         }
         return ResponseEntity.ok(quotes);
     }
+
+    @GetMapping("/page/{page}/pageSize/{pageSize}")
+    public ResponseEntity<List<QuoteResponseDto>> findQuotes(@PathVariable("page") int page,
+                                                             @PathVariable("pageSize") int pageSize) {
+        List<QuoteResponseDto> quotes = quoteService.findAllDtos(page, pageSize);
+        if (quotes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(quotes);
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<QuoteResponseDto> findRandomQuote() {
+        QuoteEntity quote = quoteService.findRandomQuote();
+        QuoteResponseDto quoteResponse = QuoteResponseDto.createQuote(quote);
+        return ResponseEntity.ok(quoteResponse);
+    }
 }
