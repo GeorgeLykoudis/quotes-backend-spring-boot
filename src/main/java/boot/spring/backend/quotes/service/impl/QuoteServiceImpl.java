@@ -12,12 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static boot.spring.backend.quotes.exception.ErrorConstants.EMPTY_TABLE;
 import static boot.spring.backend.quotes.exception.ErrorConstants.QUOTE_NOT_FOUND;
@@ -47,7 +49,7 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    @Cacheable(value = Constants.CACHE_DB, key = "#id")
+    @Cacheable(value = Constants.QUOTES_CACHE_DB, key = "#id")
     public QuoteEntity findQuoteById(Long id) {
         LOG.info("Find quote by id {}", id);
         return quoteCacheService.getQuoteById(id);
@@ -85,12 +87,9 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     private List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
-        List<QuoteResponseDto> quotesResponse = new ArrayList<>();
-        for (QuoteEntity quote : quotes) {
-            quotesResponse.add(QuoteResponseDto.createQuote(quote));
-        }
-        LOG.info("Found {} total quotes", quotesResponse.size());
-        return quotesResponse;
+        return quotes.stream()
+                .map(QuoteResponseDto::createQuote)
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -107,5 +106,18 @@ public class QuoteServiceImpl implements QuoteService {
     private int getRandomNumber(int max) {
         Random random = new Random();
         return random.nextInt(max);
+    }
+
+    @Override
+    public List<QuoteResponseDto> findQuotesDtosHavingText(String text) {
+        List<QuoteEntity> quotes = quoteCacheService.findQuotesHavingText(text);
+        return convertToQuoteResponseDtos(quotes);
+    }
+
+    @Override
+    public List<QuoteResponseDto> findQuotesDtosHavingText(String text, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        List<QuoteEntity> quotes = quoteCacheService.findQuotesHavingText(text, pageable);
+        return convertToQuoteResponseDtos(quotes);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -14,16 +15,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static boot.spring.backend.quotes.exception.ErrorConstants.EMPTY_BODY_MESSAGE;
+import static boot.spring.backend.quotes.exception.ErrorConstants.ERRORS_KEY;
+import static boot.spring.backend.quotes.exception.ErrorConstants.GENERAL_EXCEPTION_MESSAGE;
+import static boot.spring.backend.quotes.exception.ErrorConstants.TYPE_MISMATCH_EXCEPTION_MESSAGE;
+
 /**
  * @author George Lykoudis
  * @date 6/29/2023
  */
 @ControllerAdvice
 public class QuoteExceptionHandler {
-    private static final String ERRORS_KEY = "errors";
-    private static final String EMPTY_BODY_MESSAGE = "Request body cannot be null or empty.";
-    public static final String GENERAL_EXCEPTION_MESSAGE = "An Error occurred";
-    public static final String TYPE_MISMATCH_EXCEPTION_MESSAGE = "Type miss matched";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, List<String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
@@ -53,6 +55,11 @@ public class QuoteExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(getErrorsMap(GENERAL_EXCEPTION_MESSAGE));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, String>> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorsMap(ex.getMessage()));
     }
 
     private Map<String, List<String>> getErrorsMap(List<String> errors) {

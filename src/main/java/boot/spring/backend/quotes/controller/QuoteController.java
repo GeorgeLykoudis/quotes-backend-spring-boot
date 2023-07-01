@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -70,9 +71,10 @@ public class QuoteController {
         return ResponseEntity.ok(quotes);
     }
 
-    @GetMapping("/page/{page}/pageSize/{pageSize}")
-    public ResponseEntity<List<QuoteResponseDto>> findQuotes(@PathVariable("page") int page,
-                                                             @PathVariable("pageSize") int pageSize) {
+    @GetMapping("/paginated")
+    public ResponseEntity<List<QuoteResponseDto>> findQuotes(
+            @Valid @RequestParam(value = "p", required = false, defaultValue = "0") int page,
+            @Valid @RequestParam(value = "s", required = false, defaultValue = "5") int pageSize) {
         List<QuoteResponseDto> quotes = quoteService.findAllDtos(page, pageSize);
         if (quotes.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -85,5 +87,26 @@ public class QuoteController {
         QuoteEntity quote = quoteService.findRandomQuote();
         QuoteResponseDto quoteResponse = QuoteResponseDto.createQuote(quote);
         return ResponseEntity.ok(quoteResponse);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<QuoteResponseDto>> findQuotesHavingText(@Valid @RequestParam("t") String text) {
+        List<QuoteResponseDto> quotes = quoteService.findQuotesDtosHavingText(text);
+        if (quotes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(quotes);
+    }
+
+    @GetMapping("/search/paginated")
+    public ResponseEntity<List<QuoteResponseDto>> findQuotesHavingText(
+            @Valid @RequestParam("t") String text,
+            @Valid @RequestParam(value = "p", required = false, defaultValue = "0") int page,
+            @Valid @RequestParam(value = "s", required = false, defaultValue = "5") int pageSize) {
+        List<QuoteResponseDto> quotes = quoteService.findQuotesDtosHavingText(text, page, pageSize);
+        if (quotes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(quotes);
     }
 }

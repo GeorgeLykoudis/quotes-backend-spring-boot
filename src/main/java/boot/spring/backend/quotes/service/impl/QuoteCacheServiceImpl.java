@@ -28,28 +28,40 @@ public class QuoteCacheServiceImpl implements QuoteCacheService {
     }
 
     @Override
-    @Cacheable(value = Constants.CACHE_DB)
+    @Cacheable(value = Constants.QUOTES_CACHE_DB)
     public QuoteEntity getQuoteById(Long id) {
         return quoteRepository.findById(id).orElseThrow(() -> new QuoteNotFoundException(QUOTE_NOT_FOUND + id));
     }
 
     @Override
-    @Cacheable(value = Constants.CACHE_DB)
+    @Cacheable(value = Constants.QUOTES_CACHE_DB)
     public List<Long> getLimitedQuoteIds() {
         return quoteRepository.findLimitedQuoteIds();
     }
 
 
     @Override
-    @Cacheable(value = Constants.CACHE_DB)
+    @Cacheable(value = Constants.QUOTES_CACHE_DB)
     public List<QuoteEntity> findAll() {
         return quoteRepository.findAll();
     }
 
     @Override
-    @Cacheable(value = Constants.CACHE_DB)
+    @Cacheable(value = Constants.QUOTES_CACHE_DB)
     public Page<QuoteEntity> findAll(int page, int quotesPerPage) {
         Pageable pageable = PageRequest.of(page, quotesPerPage);
         return quoteRepository.findAll(pageable);
+    }
+
+    @Override
+    @Cacheable(value = Constants.SEARCH_QUOTES_CACHE_DB, key = "#text")
+    public List<QuoteEntity> findQuotesHavingText(String text) {
+        return quoteRepository.findByTextContaining(text);
+    }
+
+    @Override
+    @Cacheable(value = Constants.SEARCH_QUOTES_CACHE_DB, key = "#text")
+    public List<QuoteEntity> findQuotesHavingText(String text, Pageable pageable) {
+        return quoteRepository.findByTextContaining(text, pageable);
     }
 }

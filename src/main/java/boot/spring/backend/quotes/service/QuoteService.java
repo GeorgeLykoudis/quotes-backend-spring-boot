@@ -24,4 +24,8 @@ public interface QuoteService {
     List<QuoteResponseDto> findAllDtos(int page, int pageSize);
 
     QuoteEntity findRandomQuote();
+
+    List<QuoteResponseDto> findQuotesDtosHavingText(String text);
+
+    List<QuoteResponseDto> findQuotesDtosHavingText(String text, int page, int pageSize);
 }

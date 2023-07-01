@@ -2,6 +2,7 @@ package boot.spring.backend.quotes.service;
 
 import boot.spring.backend.quotes.model.QuoteEntity;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -17,4 +18,8 @@ public interface QuoteCacheService {
     List<QuoteEntity> findAll();
 
     Page<QuoteEntity> findAll(int page, int quotesPerPage);
+
+    List<QuoteEntity> findQuotesHavingText(String text);
+
+    List<QuoteEntity> findQuotesHavingText(String text, Pageable pageable);
 }
