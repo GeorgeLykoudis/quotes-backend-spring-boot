@@ -3,6 +3,7 @@ package boot.spring.backend.quotes.service.impl;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
+import boot.spring.backend.quotes.exception.QuoteTableEmptyException;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.repository.QuoteRepository;
 import boot.spring.backend.quotes.service.QuoteCacheService;
@@ -57,8 +58,9 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @Transactional
+    @Cacheable(value = Constants.QUOTES_CACHE_DB, key = "#id")
     public QuoteEntity updateQuoteById(Long id, QuoteRequestDto quoteRequestDto) {
-        QuoteEntity quote = findQuoteById(id);
+        QuoteEntity quote = quoteCacheService.getQuoteById(id);
         LOG.info("Update quote with id {}", id);
         quote.setAuthor(quoteRequestDto.getAuthor());
         quote.setText(quoteRequestDto.getText());
@@ -66,6 +68,7 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
+    @Cacheable(value = Constants.QUOTES_CACHE_DB, key = "#id")
     public void deleteById(Long id) {
         if (!quoteRepository.existsById(id)) {
             throw new QuoteNotFoundException(QUOTE_NOT_FOUND + id);
@@ -82,7 +85,8 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public List<QuoteResponseDto> findAllDtos(int page, int pageSize) {
-        Page<QuoteEntity> quotePage = quoteCacheService.findAll(page, pageSize);
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<QuoteEntity> quotePage = quoteCacheService.findAll(pageable);
         return convertToQuoteResponseDtos(quotePage.getContent());
     }
 
@@ -96,7 +100,7 @@ public class QuoteServiceImpl implements QuoteService {
     public QuoteEntity findRandomQuote() {
         List<Long> quoteIds = quoteCacheService.getLimitedQuoteIds();
         if (quoteIds.isEmpty()) {
-            throw new QuoteNotFoundException(EMPTY_TABLE);
+            throw new QuoteTableEmptyException(EMPTY_TABLE);
         }
         int randomNumber = getRandomNumber(quoteIds.size());
         LOG.info("Random Quote:");

@@ -12,7 +12,7 @@ import java.util.List;
  * @date 6/29/2023
  */
 public interface QuoteRepository extends JpaRepository<QuoteEntity, Long> {
-    @Query(value = "SELECT id FROM quote LIMIT 1000;", nativeQuery = true)
+    @Query(value = "SELECT id FROM quote LIMIT 100;", nativeQuery = true)
     List<Long> findLimitedQuoteIds();
 
     List<QuoteEntity> findByTextContaining(String text);

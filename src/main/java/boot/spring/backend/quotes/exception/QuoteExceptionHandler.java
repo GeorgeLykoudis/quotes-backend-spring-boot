@@ -47,6 +47,11 @@ public class QuoteExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorsMap(ex.getMessage()));
     }
 
+    @ExceptionHandler(QuoteTableEmptyException.class)
+    public ResponseEntity<Map<String, String>> handleQuoteTableEmptyException(QuoteTableEmptyException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorsMap(ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, String>> handleArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorsMap(TYPE_MISMATCH_EXCEPTION_MESSAGE));

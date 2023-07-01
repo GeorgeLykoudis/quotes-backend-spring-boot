@@ -17,7 +17,7 @@ public interface QuoteCacheService {
 
     List<QuoteEntity> findAll();
 
-    Page<QuoteEntity> findAll(int page, int quotesPerPage);
+    Page<QuoteEntity> findAll(Pageable pageable);
 
     List<QuoteEntity> findQuotesHavingText(String text);
 

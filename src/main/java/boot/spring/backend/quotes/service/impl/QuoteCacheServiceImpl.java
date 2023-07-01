@@ -48,8 +48,7 @@ public class QuoteCacheServiceImpl implements QuoteCacheService {
 
     @Override
     @Cacheable(value = Constants.QUOTES_CACHE_DB)
-    public Page<QuoteEntity> findAll(int page, int quotesPerPage) {
-        Pageable pageable = PageRequest.of(page, quotesPerPage);
+    public Page<QuoteEntity> findAll(Pageable pageable) {
         return quoteRepository.findAll(pageable);
     }
 
