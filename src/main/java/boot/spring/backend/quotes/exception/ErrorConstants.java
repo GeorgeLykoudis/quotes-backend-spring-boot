@@ -6,6 +6,7 @@ package boot.spring.backend.quotes.exception;
  */
 public class ErrorConstants {
     public static final String QUOTE_NOT_FOUND = "Could not find quote id ";
+    public static final String QUOTE_ALREADY_EXIST = "Quote already exist.";
     public static final String EMPTY_TABLE = "Table quote is empty";
     public static final String EMPTY_BODY_MESSAGE = "Request body cannot be null or empty.";
     public static final String GENERAL_EXCEPTION_MESSAGE = "An Error occurred";

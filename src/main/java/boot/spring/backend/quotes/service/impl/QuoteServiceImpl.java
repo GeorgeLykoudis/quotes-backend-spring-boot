@@ -2,6 +2,8 @@ package boot.spring.backend.quotes.service.impl;
 
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
+import boot.spring.backend.quotes.exception.ErrorConstants;
+import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.exception.QuoteTableEmptyException;
 import boot.spring.backend.quotes.model.QuoteEntity;
@@ -46,6 +48,11 @@ public class QuoteServiceImpl implements QuoteService {
     @Transactional
     @CacheEvict(value = Constants.QUOTES_CACHE_DB, allEntries = true)
     public QuoteEntity saveQuote(QuoteRequestDto quoteRequestDto) {
+        QuoteEntity existingQuote = quoteRepository.findQuoteByText(quoteRequestDto.getText());
+        if (existingQuote != null) {
+            throw new QuoteAlreadyExistException(ErrorConstants.QUOTE_ALREADY_EXIST);
+        }
+
         QuoteEntity quoteEntity = QuoteEntity.createQuoteEntity(quoteRequestDto);
         QuoteEntity savedQuote = quoteRepository.save(quoteEntity);
         LOG.info("Saved new quote with id {}", savedQuote.getId());

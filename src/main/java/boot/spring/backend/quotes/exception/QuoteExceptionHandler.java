@@ -64,4 +64,9 @@ public class QuoteExceptionHandler {
     public ResponseEntity<QuoteErrorResponseDto> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(QuoteErrorResponseDto.getErrorResponse(ex.getMessage()));
     }
+
+    @ExceptionHandler(QuoteAlreadyExistException.class)
+    public ResponseEntity<QuoteErrorResponseDto> handleQuoteAlreadyExistException(QuoteAlreadyExistException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(QuoteErrorResponseDto.getErrorResponse(ex.getMessage()));
+    }
 }

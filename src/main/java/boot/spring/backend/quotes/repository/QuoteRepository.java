@@ -18,4 +18,6 @@ public interface QuoteRepository extends JpaRepository<QuoteEntity, Long> {
     List<QuoteEntity> findByTextContaining(String text);
 
     List<QuoteEntity> findByTextContaining(String text, Pageable pageable);
+
+    QuoteEntity findQuoteByText(String text);
 }
