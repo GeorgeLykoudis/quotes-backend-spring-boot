@@ -9,6 +9,8 @@ import boot.spring.backend.quotes.model.QuoteEntity;
 public class QuoteResponseDto extends QuoteRequestDto {
     private Long id;
 
+    public QuoteResponseDto() {}
+
     private QuoteResponseDto(QuoteEntity quoteEntity) {
         super(quoteEntity);
         this.id = quoteEntity.getId();

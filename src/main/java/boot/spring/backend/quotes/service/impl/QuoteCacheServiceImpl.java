@@ -7,7 +7,6 @@ import boot.spring.backend.quotes.service.QuoteCacheService;
 import boot.spring.backend.quotes.utils.Constants;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 

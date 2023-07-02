@@ -1,5 +1,6 @@
 package boot.spring.backend.quotes.dto;
 
+import boot.spring.backend.quotes.exception.ErrorConstants;
 import boot.spring.backend.quotes.model.QuoteEntity;
 
 import javax.validation.constraints.NotBlank;
@@ -12,8 +13,8 @@ import javax.validation.constraints.NotNull;
 public class QuoteRequestDto {
     private String author;
 
-    @NotNull(message = "Text cannot be null")
-    @NotBlank(message = "Text cannot be empty")
+    @NotNull(message = ErrorConstants.TEXT_CANNOT_BE_NULL)
+    @NotBlank(message = ErrorConstants.TEXT_CANNOT_BE_EMPTY)
     private String text;
 
     public QuoteRequestDto() {}
