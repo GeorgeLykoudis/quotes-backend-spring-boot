@@ -11,6 +11,8 @@ import boot.spring.backend.quotes.service.QuoteService;
 import boot.spring.backend.quotes.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +44,7 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @Transactional
+    @CacheEvict(value = Constants.QUOTES_CACHE_DB, allEntries = true)
     public QuoteEntity saveQuote(QuoteRequestDto quoteRequestDto) {
         QuoteEntity quoteEntity = QuoteEntity.createQuoteEntity(quoteRequestDto);
         QuoteEntity savedQuote = quoteRepository.save(quoteEntity);
@@ -58,7 +61,8 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @Transactional
-    @Cacheable(value = Constants.QUOTES_CACHE_DB, key = "#id")
+    @CacheEvict(value = Constants.QUOTES_CACHE_DB, allEntries = true)
+    @CachePut(value = Constants.QUOTES_CACHE_DB)
     public QuoteEntity updateQuoteById(Long id, QuoteRequestDto quoteRequestDto) {
         QuoteEntity quote = quoteCacheService.getQuoteById(id);
         LOG.info("Update quote with id {}", id);
@@ -68,7 +72,7 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    @Cacheable(value = Constants.QUOTES_CACHE_DB, key = "#id")
+    @CacheEvict(value = Constants.QUOTES_CACHE_DB, allEntries = true)
     public void deleteById(Long id) {
         if (!quoteRepository.existsById(id)) {
             throw new QuoteNotFoundException(QUOTE_NOT_FOUND + id);

@@ -33,7 +33,7 @@ public class QuoteCacheServiceImpl implements QuoteCacheService {
     }
 
     @Override
-    @Cacheable(value = Constants.QUOTES_CACHE_DB)
+    @Cacheable(value = Constants.LIMITED_QUOTE_IDS_CACHE_DB)
     public List<Long> getLimitedQuoteIds() {
         return quoteRepository.findLimitedQuoteIds();
     }
