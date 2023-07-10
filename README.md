@@ -16,18 +16,30 @@ the entire application can be executed in a docker environment using the
 **docker-compose.yml** file.
 
 ### Execution commands
-```bash
-# in order to create the jar
-## for windows
-.\mvn.cmd clean package -DskipTests
-## or for linux/mac: ./mvn clean package
 
-# in order to build the docker image for the spring boot app
-docker-compose build 
+Simply execute `docker-compose up --build`.
 
-# start the both mysql and quotes app containers 
-docker-compose up
-```
+[//]: # (```bash)
+
+[//]: # (# in order to create the jar)
+
+[//]: # (## for windows)
+
+[//]: # (.\mvn.cmd clean package -DskipTests)
+
+[//]: # (## or for linux/mac: ./mvn clean package)
+
+[//]: # ()
+[//]: # (# in order to build the docker image for the spring boot app)
+
+[//]: # (docker-compose build )
+
+[//]: # ()
+[//]: # (# start the both mysql and quotes app containers )
+
+[//]: # (docker-compose up)
+
+[//]: # (```)
 
 ### Notes
 * In directory `./src/main/scripts` the file **/mysql-setup.sql** was created
