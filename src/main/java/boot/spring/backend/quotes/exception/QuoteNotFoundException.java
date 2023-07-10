@@ -6,6 +6,10 @@ package boot.spring.backend.quotes.exception;
  */
 public class QuoteNotFoundException extends RuntimeException {
 
+    public QuoteNotFoundException() {
+        super();
+    }
+
     public QuoteNotFoundException(String message) {
         super(message);
     }

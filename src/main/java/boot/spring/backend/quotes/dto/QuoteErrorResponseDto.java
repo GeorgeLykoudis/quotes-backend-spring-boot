@@ -2,6 +2,7 @@ package boot.spring.backend.quotes.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -9,42 +10,19 @@ import java.util.List;
  * @date 7/2/2023
  */
 public class QuoteErrorResponseDto {
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String error;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<String> errors;
+    private int errorCode;
 
     public QuoteErrorResponseDto() {}
 
-    private QuoteErrorResponseDto(String error) {
-        this.error = error;
+    private QuoteErrorResponseDto(int errorCode) {
+        this.errorCode = errorCode;
     }
 
-    private QuoteErrorResponseDto(List<String> errors) {
-        this.errors = errors;
+    public static QuoteErrorResponseDto of(int errorCode) {
+        return new QuoteErrorResponseDto(errorCode);
     }
 
-    public static QuoteErrorResponseDto getErrorResponse(String error) {
-        return new QuoteErrorResponseDto(error);
-    }
-
-    public static QuoteErrorResponseDto getErrorsResponse(List<String> error) {
-        return new QuoteErrorResponseDto(error);
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
-    }
-
-    public List<String> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<String> errors) {
-        this.errors = errors;
+    public int getErrorCode() {
+        return errorCode;
     }
 }

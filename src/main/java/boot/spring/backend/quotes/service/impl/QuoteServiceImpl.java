@@ -5,7 +5,6 @@ import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.exception.ErrorConstants;
 import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
-import boot.spring.backend.quotes.exception.QuoteTableEmptyException;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.repository.QuoteRepository;
 import boot.spring.backend.quotes.service.QuoteCacheService;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import static boot.spring.backend.quotes.exception.ErrorConstants.EMPTY_TABLE;
 import static boot.spring.backend.quotes.exception.ErrorConstants.QUOTE_NOT_FOUND;
 
 /**
@@ -111,7 +109,7 @@ public class QuoteServiceImpl implements QuoteService {
     public QuoteEntity findRandomQuote() {
         List<Long> quoteIds = quoteCacheService.getLimitedQuoteIds();
         if (quoteIds.isEmpty()) {
-            throw new QuoteTableEmptyException(EMPTY_TABLE);
+            return new QuoteEntity();
         }
         int randomNumber = getRandomNumber(quoteIds.size());
         LOG.info("Random Quote:");

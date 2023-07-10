@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static boot.spring.backend.quotes.exception.ErrorConstants.QUOTE_NOT_FOUND;
-
 /**
  * @author George Lykoudis
  * @date 7/1/2023
@@ -29,7 +27,7 @@ public class QuoteCacheServiceImpl implements QuoteCacheService {
     @Override
     @Cacheable(value = Constants.QUOTES_CACHE_DB)
     public QuoteEntity getQuoteById(Long id) {
-        return quoteRepository.findById(id).orElseThrow(() -> new QuoteNotFoundException(QUOTE_NOT_FOUND + id));
+        return quoteRepository.findById(id).orElseThrow(QuoteNotFoundException::new);
     }
 
     @Override
@@ -37,7 +35,6 @@ public class QuoteCacheServiceImpl implements QuoteCacheService {
     public List<Long> getLimitedQuoteIds() {
         return quoteRepository.findLimitedQuoteIds();
     }
-
 
     @Override
     @Cacheable(value = Constants.QUOTES_CACHE_DB)
