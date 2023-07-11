@@ -6,7 +6,6 @@ import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.exception.ErrorConstants;
 import boot.spring.backend.quotes.exception.QuoteExceptionHandler;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
-import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.service.impl.QuoteServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -72,7 +71,7 @@ class QuoteControllerTest {
         request.setText(text);
         request.setAuthor(author);
 
-        QuoteEntity quote = new QuoteEntity();
+        QuoteResponseDto quote = new QuoteResponseDto();
         quote.setId(id);
         quote.setText(text);
         quote.setAuthor(author);
@@ -129,12 +128,12 @@ class QuoteControllerTest {
         String text = "text";
         String author = "author";
 
-        QuoteEntity quote = new QuoteEntity();
-        quote.setId(id);
-        quote.setText(text);
-        quote.setAuthor(author);
+        QuoteResponseDto quoteResponseDto = new QuoteResponseDto();
+        quoteResponseDto.setId(id);
+        quoteResponseDto.setText(text);
+        quoteResponseDto.setAuthor(author);
 
-        when(service.findQuoteById(anyLong())).thenReturn(quote);
+        when(service.findQuoteById(anyLong())).thenReturn(quoteResponseDto);
 
         mvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isOk())
@@ -181,7 +180,7 @@ class QuoteControllerTest {
         request.setText(text);
         request.setAuthor(author);
 
-        QuoteEntity quote = new QuoteEntity();
+        QuoteResponseDto quote = new QuoteResponseDto();
         quote.setId(id);
         quote.setText(text);
         quote.setAuthor(author);
@@ -250,7 +249,7 @@ class QuoteControllerTest {
     void findQuotes_Success() throws Exception {
         List<QuoteResponseDto> quoteResponseDtos = utils.convertToQuoteResponseDtos();
 
-        when(service.findAllDtos()).thenReturn(quoteResponseDtos);
+        when(service.findAll()).thenReturn(quoteResponseDtos);
 
         mvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
@@ -263,7 +262,7 @@ class QuoteControllerTest {
     void findQuotes_EmptyTable_ThrowsQuoteTableEmptyException() throws Exception {
         List<QuoteResponseDto> quoteResponse = new ArrayList<>();
 
-        when(service.findAllDtos()).thenReturn(quoteResponse);
+        when(service.findAll()).thenReturn(quoteResponse);
 
         mvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
@@ -278,7 +277,7 @@ class QuoteControllerTest {
         String text = "test";
         String author = "author";
 
-        QuoteEntity quote = new QuoteEntity();
+        QuoteResponseDto quote = new QuoteResponseDto();
         quote.setId(id);
         quote.setText(text);
         quote.setAuthor(author);
@@ -325,7 +324,7 @@ class QuoteControllerTest {
         List<QuoteResponseDto> quotes = utils.convertToQuoteResponseDtos();
         String searchString = "searchFor";
 
-        when(service.findQuotesDtosHavingText(anyString())).thenReturn(quotes);
+        when(service.findQuotesHavingText(anyString())).thenReturn(quotes);
 
         mvc.perform(get(BASE_URL + "/search")
                         .param("t", searchString))
@@ -339,7 +338,7 @@ class QuoteControllerTest {
         List<QuoteResponseDto> quotes = new ArrayList<>();
         String searchString = "searchFor";
 
-        when(service.findQuotesDtosHavingText(anyString())).thenReturn(quotes);
+        when(service.findQuotesHavingText(anyString())).thenReturn(quotes);
 
         mvc.perform(get(BASE_URL + "/search")
                         .param("t", searchString))

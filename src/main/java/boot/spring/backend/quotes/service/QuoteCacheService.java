@@ -21,5 +21,5 @@ public interface QuoteCacheService {
 
     List<QuoteEntity> findQuotesHavingText(String text);
 
-    List<QuoteEntity> findQuotesHavingText(String text, Pageable pageable);
+    Page<QuoteEntity> findQuotesHavingText(String text, Pageable pageable);
 }

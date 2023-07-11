@@ -3,6 +3,7 @@ package boot.spring.backend.quotes.service.impl;
 import boot.spring.backend.quotes.Utils;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
+import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.repository.QuoteRepository;
@@ -65,7 +66,7 @@ class QuoteServiceImplTest {
         request.setText(text);
 
         when(quoteRepository.save(any(QuoteEntity.class))).thenReturn(savedQuote);
-        QuoteEntity result = quoteService.saveQuote(request);
+        QuoteResponseDto result = quoteService.saveQuote(request);
 
         verify(quoteRepository, times(1)).save(any(QuoteEntity.class));
         assertNotNull(result);
@@ -133,7 +134,7 @@ class QuoteServiceImplTest {
         when(cacheService.getQuoteById(anyLong())).thenReturn(searchedQuote);
         when(quoteRepository.save(any(QuoteEntity.class))).thenReturn(savedQuote);
 
-        QuoteEntity result = quoteService.updateQuoteById(id, request);
+        QuoteResponseDto result = quoteService.updateQuoteById(id, request);
 
         verify(cacheService, times(1)).getQuoteById(anyLong());
         verify(quoteRepository, times(1)).save(any(QuoteEntity.class));
@@ -150,7 +151,7 @@ class QuoteServiceImplTest {
         when(cacheService.getQuoteById(anyLong())).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteEntity result = quoteService.updateQuoteById(id, new QuoteRequestDto());
+            QuoteResponseDto result = quoteService.updateQuoteById(id, new QuoteRequestDto());
             verify(cacheService, times(1)).getQuoteById(anyLong());
             assertNull(result);
         });
@@ -168,7 +169,7 @@ class QuoteServiceImplTest {
         verify(quoteRepository, times(1)).existsById(anyLong());
         verify(quoteRepository, times(1)).deleteById(anyLong());
         assertThrows(QuoteNotFoundException.class, () -> {
-           QuoteEntity quote = quoteService.findQuoteById(anyLong());
+           QuoteResponseDto quote = quoteService.findQuoteById(anyLong());
             verify(cacheService, times(1)).getQuoteById(anyLong());
             assertNull(quote);
         });
@@ -194,7 +195,7 @@ class QuoteServiceImplTest {
 
         when(cacheService.findAll()).thenReturn(searchedQuotes);
 
-        List<QuoteResponseDto> result = quoteService.findAllDtos();
+        List<QuoteResponseDto> result = quoteService.findAll();
 
         verify(cacheService, times(1)).findAll();
         assertNotNull(result);
@@ -218,7 +219,7 @@ class QuoteServiceImplTest {
         when(cacheService.findAll()).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            List<QuoteResponseDto> quotes = quoteService.findAllDtos();
+            List<QuoteResponseDto> quotes = quoteService.findAll();
             verify(cacheService.findAll(), times(1));
             assertNull(quotes);
         });
@@ -235,11 +236,11 @@ class QuoteServiceImplTest {
 
         when(cacheService.findAll(any(Pageable.class))).thenReturn(pageQuotes);
 
-        List<QuoteResponseDto> result = quoteService.findAllDtos(page, pageSize);
+        QuoteResponsePaginationDto result = quoteService.findAll(page, pageSize);
 
         verify(cacheService, times(1)).findAll(any(Pageable.class));
         assertNotNull(result);
-        assertEquals(searchedQuotes.size(), result.size());
+        assertEquals(searchedQuotes.size(), result.getQuotes().size());
     }
 
     @Test
@@ -247,7 +248,7 @@ class QuoteServiceImplTest {
         when(cacheService.findAll(any(Pageable.class))).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            List<QuoteResponseDto> result = quoteService.findAllDtos(0, 1);
+            QuoteResponsePaginationDto result = quoteService.findAll(0, 1);
             verify(cacheService, times(1)).findAll(any(Pageable.class));
             assertNull(result);
         });
@@ -262,7 +263,7 @@ class QuoteServiceImplTest {
         when(cacheService.getLimitedQuoteIds()).thenReturn(ids);
         when(cacheService.getQuoteById(anyLong())).thenReturn(quote1);
 
-        QuoteEntity result = quoteService.findRandomQuote();
+        QuoteResponseDto result = quoteService.findRandomQuote();
 
         verify(cacheService, times(1)).getLimitedQuoteIds();
         verify(cacheService, times(1)).getQuoteById(anyLong());
@@ -278,7 +279,7 @@ class QuoteServiceImplTest {
         when(cacheService.getLimitedQuoteIds()).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteEntity result = quoteService.findRandomQuote();
+            QuoteResponseDto result = quoteService.findRandomQuote();
             verify(cacheService, times(1)).getLimitedQuoteIds();
             assertNotNull(result);
         });
@@ -293,7 +294,7 @@ class QuoteServiceImplTest {
         when(cacheService.getQuoteById(anyLong())).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteEntity result = quoteService.findRandomQuote();
+            QuoteResponseDto result = quoteService.findRandomQuote();
             verify(cacheService, times(1)).getLimitedQuoteIds();
             verify(cacheService, times(1)).getQuoteById(anyLong());
             assertNotNull(result);
@@ -308,7 +309,7 @@ class QuoteServiceImplTest {
 
         when(cacheService.findQuotesHavingText(anyString())).thenReturn(searchedQuotes);
 
-        List<QuoteResponseDto> result = quoteService.findQuotesDtosHavingText(searchedString);
+        List<QuoteResponseDto> result = quoteService.findQuotesHavingText(searchedString);
 
         verify(cacheService, times(1)).findQuotesHavingText(anyString());
         assertNotNull(result);
@@ -334,7 +335,7 @@ class QuoteServiceImplTest {
         when(cacheService.findQuotesHavingText(anyString())).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            List<QuoteResponseDto> result = quoteService.findQuotesDtosHavingText(searchedString);
+            List<QuoteResponseDto> result = quoteService.findQuotesHavingText(searchedString);
             verify(cacheService, times(1)).findQuotesHavingText(anyString());
             assertNull(result);
         });
@@ -347,13 +348,15 @@ class QuoteServiceImplTest {
         int page = 0;
         int pageSize = searchedQuotes.size();
 
-        when(cacheService.findQuotesHavingText(anyString(), any(Pageable.class))).thenReturn(searchedQuotes);
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<QuoteEntity> pageQuotes = new PageImpl<>(searchedQuotes, pageable, searchedQuotes.size());
+        when(cacheService.findQuotesHavingText(anyString(), any(Pageable.class))).thenReturn(pageQuotes);
 
-        List<QuoteResponseDto> result = quoteService.findQuotesDtosHavingText(searchedString, page, pageSize);
+        QuoteResponsePaginationDto result = quoteService.findQuotesHavingText(searchedString, page, pageSize);
 
         verify(cacheService, times(1)).findQuotesHavingText(anyString(), any(Pageable.class));
         assertNotNull(result);
-        assertEquals(searchedQuotes.size(), result.size());
+        assertEquals(searchedQuotes.size(), result.getQuotes().size());
     }
 
     @Test
@@ -363,7 +366,7 @@ class QuoteServiceImplTest {
         when(cacheService.findQuotesHavingText(anyString(), any(Pageable.class))).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            List<QuoteResponseDto> result = quoteService.findQuotesDtosHavingText(searchedString, 0, 1);
+            QuoteResponsePaginationDto result = quoteService.findQuotesHavingText(searchedString, 0, 1);
             verify(cacheService, times(1)).findQuotesHavingText(anyString(), any(Pageable.class));
             assertNull(result);
         });

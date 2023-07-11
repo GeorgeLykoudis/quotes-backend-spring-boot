@@ -1,7 +1,5 @@
 package boot.spring.backend.quotes.model;
 
-import boot.spring.backend.quotes.dto.QuoteRequestDto;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,15 +21,6 @@ public class QuoteEntity {
     private String text;
 
     public QuoteEntity() {}
-
-    private QuoteEntity(QuoteRequestDto quoteRequestDto) {
-        this.author = quoteRequestDto.getAuthor();
-        this.text = quoteRequestDto.getText();
-    }
-
-    public static QuoteEntity createQuoteEntity(QuoteRequestDto quoteRequestDto) {
-        return new QuoteEntity(quoteRequestDto);
-    }
 
     public Long getId() {
         return id;

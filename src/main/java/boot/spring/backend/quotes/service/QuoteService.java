@@ -2,6 +2,7 @@ package boot.spring.backend.quotes.service;
 
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
+import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.model.QuoteEntity;
 
 import java.util.List;
@@ -11,21 +12,21 @@ import java.util.List;
  * @date 6/29/2023
  */
 public interface QuoteService {
-    QuoteEntity saveQuote(QuoteRequestDto quoteRequestDto);
+    QuoteResponseDto saveQuote(QuoteRequestDto quoteRequestDto);
 
-    QuoteEntity findQuoteById(Long id);
+    QuoteResponseDto findQuoteById(Long id);
 
-    QuoteEntity updateQuoteById(Long id, QuoteRequestDto quoteRequestDto);
+    QuoteResponseDto updateQuoteById(Long id, QuoteRequestDto quoteRequestDto);
 
     void deleteById(Long id);
 
-    List<QuoteResponseDto> findAllDtos();
+    List<QuoteResponseDto> findAll();
 
-    List<QuoteResponseDto> findAllDtos(int page, int pageSize);
+    QuoteResponsePaginationDto findAll(int page, int pageSize);
 
-    QuoteEntity findRandomQuote();
+    QuoteResponseDto findRandomQuote();
 
-    List<QuoteResponseDto> findQuotesDtosHavingText(String text);
+    List<QuoteResponseDto> findQuotesHavingText(String text);
 
-    List<QuoteResponseDto> findQuotesDtosHavingText(String text, int page, int pageSize);
+    QuoteResponsePaginationDto findQuotesHavingText(String text, int page, int pageSize);
 }

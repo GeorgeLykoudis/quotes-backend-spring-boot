@@ -1,5 +1,6 @@
 package boot.spring.backend.quotes;
 
+import boot.spring.backend.quotes.converter.QuoteEntityToQuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,13 +49,13 @@ public class Utils {
 
     public List<QuoteResponseDto> convertToQuoteResponseDtos() {
         return createQuotesList().stream()
-                .map(QuoteResponseDto::createQuote)
+                .map(QuoteEntityToQuoteResponseDto::convertFrom)
                 .collect(Collectors.toList());
     }
 
     public List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
         return quotes.stream()
-                .map(QuoteResponseDto::createQuote)
+                .map(QuoteEntityToQuoteResponseDto::convertFrom)
                 .collect(Collectors.toList());
     }
 }

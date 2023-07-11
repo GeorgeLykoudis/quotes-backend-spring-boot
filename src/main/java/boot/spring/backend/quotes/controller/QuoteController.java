@@ -2,6 +2,7 @@ package boot.spring.backend.quotes.controller;
 
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
+import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.service.QuoteService;
 import org.springframework.http.HttpStatus;
@@ -35,15 +36,13 @@ public class QuoteController {
 
     @PostMapping
     public ResponseEntity<QuoteResponseDto> createQuote(@Valid @RequestBody QuoteRequestDto quoteRequestDto) {
-        QuoteEntity quote = quoteService.saveQuote(quoteRequestDto);
-        QuoteResponseDto quoteResponse = QuoteResponseDto.createQuote(quote);
+        QuoteResponseDto quoteResponse = quoteService.saveQuote(quoteRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(quoteResponse);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<QuoteResponseDto> getQuoteById(@Valid @PathVariable("id") Long id) {
-        QuoteEntity quote = quoteService.findQuoteById(id);
-        QuoteResponseDto quoteResponse = QuoteResponseDto.createQuote(quote);
+        QuoteResponseDto quoteResponse = quoteService.findQuoteById(id);
         return ResponseEntity.ok(quoteResponse);
     }
 
@@ -51,8 +50,7 @@ public class QuoteController {
     @PutMapping("/{id}")
     public ResponseEntity<QuoteResponseDto> updateQuoteById(@Valid @PathVariable("id") Long id,
                                                             @Valid @RequestBody QuoteRequestDto quoteRequestDto) {
-        QuoteEntity quote = quoteService.updateQuoteById(id, quoteRequestDto);
-        QuoteResponseDto quoteResponse = QuoteResponseDto.createQuote(quote);
+        QuoteResponseDto quoteResponse = quoteService.updateQuoteById(id, quoteRequestDto);
         return ResponseEntity.ok(quoteResponse);
     }
 
@@ -64,46 +62,40 @@ public class QuoteController {
 
     @GetMapping
     public ResponseEntity<List<QuoteResponseDto>> findQuotes() {
-        List<QuoteResponseDto> quotes = quoteService.findAllDtos();
-        if (quotes.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(quotes);
+        List<QuoteResponseDto> quotes = quoteService.findAll();
+        return createNotFoundOrOk(quotes);
     }
 
     @GetMapping("/paginated")
-    public ResponseEntity<List<QuoteResponseDto>> findQuotes(
+    public ResponseEntity<QuoteResponsePaginationDto> findQuotes(
             @Valid @RequestParam(value = "p", required = false, defaultValue = "0") int page,
             @Valid @RequestParam(value = "s", required = false, defaultValue = "5") int pageSize) {
-        List<QuoteResponseDto> quotes = quoteService.findAllDtos(page, pageSize);
-        if (quotes.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        QuoteResponsePaginationDto quotes = quoteService.findAll(page, pageSize);
         return ResponseEntity.ok(quotes);
     }
 
     @GetMapping("/random")
     public ResponseEntity<QuoteResponseDto> findRandomQuote() {
-        QuoteEntity quote = quoteService.findRandomQuote();
-        QuoteResponseDto quoteResponse = QuoteResponseDto.createQuote(quote);
+        QuoteResponseDto quoteResponse = quoteService.findRandomQuote();
         return ResponseEntity.ok(quoteResponse);
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<QuoteResponseDto>> findQuotesHavingText(@Valid @RequestParam("t") String text) {
-        List<QuoteResponseDto> quotes = quoteService.findQuotesDtosHavingText(text);
-        if (quotes.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(quotes);
+        List<QuoteResponseDto> quotes = quoteService.findQuotesHavingText(text);
+        return createNotFoundOrOk(quotes);
     }
 
     @GetMapping("/search/paginated")
-    public ResponseEntity<List<QuoteResponseDto>> findQuotesHavingText(
+    public ResponseEntity<QuoteResponsePaginationDto> findQuotesHavingText(
             @Valid @RequestParam("t") String text,
             @Valid @RequestParam(value = "p", required = false, defaultValue = "0") int page,
             @Valid @RequestParam(value = "s", required = false, defaultValue = "5") int pageSize) {
-        List<QuoteResponseDto> quotes = quoteService.findQuotesDtosHavingText(text, page, pageSize);
+        QuoteResponsePaginationDto quotes = quoteService.findQuotesHavingText(text, page, pageSize);
+        return ResponseEntity.ok(quotes);
+    }
+
+    private ResponseEntity<List<QuoteResponseDto>> createNotFoundOrOk(List<QuoteResponseDto> quotes) {
         if (quotes.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

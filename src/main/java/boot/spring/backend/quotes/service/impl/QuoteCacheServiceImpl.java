@@ -56,7 +56,7 @@ public class QuoteCacheServiceImpl implements QuoteCacheService {
 
     @Override
     @Cacheable(value = Constants.SEARCH_QUOTES_CACHE_DB, key = "#text")
-    public List<QuoteEntity> findQuotesHavingText(String text, Pageable pageable) {
+    public Page<QuoteEntity> findQuotesHavingText(String text, Pageable pageable) {
         return quoteRepository.findByTextContaining(text, pageable);
     }
 }

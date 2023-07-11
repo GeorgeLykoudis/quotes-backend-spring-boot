@@ -1,11 +1,13 @@
 package boot.spring.backend.quotes.repository;
 
 import boot.spring.backend.quotes.model.QuoteEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author George Lykoudis
@@ -17,7 +19,7 @@ public interface QuoteRepository extends JpaRepository<QuoteEntity, Long> {
 
     List<QuoteEntity> findByTextContaining(String text);
 
-    List<QuoteEntity> findByTextContaining(String text, Pageable pageable);
+    Page<QuoteEntity> findByTextContaining(String text, Pageable pageable);
 
-    QuoteEntity findQuoteByText(String text);
+    Optional<QuoteEntity> findQuoteByText(String text);
 }
