@@ -1,9 +1,8 @@
 package boot.spring.backend.quotes.dto;
 
 import boot.spring.backend.quotes.model.QuoteEntity;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author George Lykoudis
@@ -17,11 +16,6 @@ public class QuoteRequestDto {
     private String text;
 
     public QuoteRequestDto() {}
-
-    public QuoteRequestDto(QuoteEntity quoteEntity) {
-        this.author = quoteEntity.getAuthor();
-        this.text = quoteEntity.getText();
-    }
 
     public String getAuthor() {
         return author;

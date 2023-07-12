@@ -19,11 +19,6 @@ public class QuoteExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<QuoteErrorResponseDto> handleValidationErrors(MethodArgumentNotValidException ex) {
-//        List<String> errors = ex.getBindingResult().getFieldErrors()
-//                .stream()
-//                .map(FieldError::getDefaultMessage)
-//                .collect(Collectors.toList());
-
         return ResponseEntity.badRequest()
                 .body(QuoteErrorResponseDto.of(ErrorConstants.TYPE_MISMATCH_EXCEPTION_MESSAGE.getCode()));
     }

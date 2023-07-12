@@ -1,10 +1,5 @@
 package boot.spring.backend.quotes.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @author George Lykoudis
  * @date 7/2/2023

@@ -260,13 +260,14 @@ class QuoteServiceImplTest {
         List<Long> ids = searchedQuotes.stream().map(QuoteEntity::getId).collect(Collectors.toList());
         QuoteEntity quote1 = searchedQuotes.get(0);
 
-        when(cacheService.getLimitedQuoteIds()).thenReturn(ids);
-        when(cacheService.getQuoteById(anyLong())).thenReturn(quote1);
+//        when(cacheService.getLimitedQuoteIds()).thenReturn(ids);
+//        when(cacheService.getQuoteById(anyLong())).thenReturn(quote1);
+        when(quoteRepository.findRandomQuote()).thenReturn(quote1);
 
         QuoteResponseDto result = quoteService.findRandomQuote();
 
-        verify(cacheService, times(1)).getLimitedQuoteIds();
-        verify(cacheService, times(1)).getQuoteById(anyLong());
+        verify(quoteRepository, times(1)).findRandomQuote();
+//        verify(cacheService, times(1)).getQuoteById(anyLong());
         assertNotNull(result);
         assertEquals(quote1.getId(), result.getId());
         assertEquals(quote1.getText(), result.getText());
