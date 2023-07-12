@@ -22,4 +22,7 @@ public interface QuoteRepository extends JpaRepository<QuoteEntity, Long> {
     Page<QuoteEntity> findByTextContaining(String text, Pageable pageable);
 
     Optional<QuoteEntity> findQuoteByText(String text);
+
+    @Query(value = "SELECT * FROM quote ORDER BY RAND() LIMIT 1;", nativeQuery = true)
+    QuoteEntity findRandomQuote();
 }

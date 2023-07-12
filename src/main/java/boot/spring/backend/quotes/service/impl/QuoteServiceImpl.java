@@ -107,9 +107,9 @@ public class QuoteServiceImpl implements QuoteService {
                 .map(QuoteEntityToQuoteResponseDto::convertFrom)
                 .collect(Collectors.toList());
     }
-    
-    @Override
-    public QuoteResponseDto findRandomQuote() {
+
+    @Deprecated
+    public QuoteResponseDto findRandomQuote2() {
         List<Long> quoteIds = quoteCacheService.getLimitedQuoteIds();
         if (quoteIds.isEmpty()) {
             return new QuoteResponseDto();
@@ -123,6 +123,12 @@ public class QuoteServiceImpl implements QuoteService {
     private int getRandomNumber(int max) {
         Random random = new Random();
         return random.nextInt(max);
+    }
+
+    @Override
+    public QuoteResponseDto findRandomQuote() {
+        QuoteEntity quote = quoteRepository.findRandomQuote();
+        return QuoteEntityToQuoteResponseDto.convertFrom(quote);
     }
 
     @Override
