@@ -3,7 +3,6 @@ package boot.spring.backend.quotes.controller;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
-import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.service.QuoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

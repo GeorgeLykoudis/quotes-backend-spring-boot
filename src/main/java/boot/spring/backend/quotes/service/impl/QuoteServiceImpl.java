@@ -22,14 +22,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import static boot.spring.backend.quotes.exception.ErrorConstants.QUOTE_NOT_FOUND;
 
 /**
  * @author George Lykoudis
@@ -102,13 +99,7 @@ public class QuoteServiceImpl implements QuoteService {
     public QuoteResponsePaginationDto findAll(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<QuoteEntity> quotePage = quoteCacheService.findAll(pageable);
-        QuoteResponsePaginationDto response = new QuoteResponsePaginationDto();
-        response.setPage(page);
-        response.setPageSize(pageSize);
-        response.setTotalQuotes(quotePage.getTotalElements());
-        List<QuoteEntity> content = quotePage.getContent();
-        response.setQuotes(convertToQuoteResponseDtos(content));
-        return response;
+        return createPaginationResponse(quotePage);
     }
 
     private List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
@@ -144,10 +135,14 @@ public class QuoteServiceImpl implements QuoteService {
     public QuoteResponsePaginationDto findQuotesHavingText(String text, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<QuoteEntity> quotes = quoteCacheService.findQuotesHavingText(text, pageable);
+        return createPaginationResponse(quotes);
+    }
 
+    private QuoteResponsePaginationDto createPaginationResponse(Page<QuoteEntity> quotes) {
         QuoteResponsePaginationDto response = new QuoteResponsePaginationDto();
-        response.setPage(page);
-        response.setPageSize(pageSize);
+        Pageable pageable = quotes.getPageable();
+        response.setPage(pageable.getPageNumber());
+        response.setPageSize(pageable.getPageSize());
         response.setTotalQuotes(quotes.getTotalElements());
         List<QuoteEntity> content = quotes.getContent();
         response.setQuotes(convertToQuoteResponseDtos(content));
