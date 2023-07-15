@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.1</version>
+		<version>3.1.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>boot.spring.backend</groupId>
@@ -14,9 +14,8 @@
 	<name>quotes</name>
 	<description>Quotes Spring Boot Demo Project</description>
 	<properties>
-		<java.version>11</java.version>
-		<spring.validation.version>3.1.0</spring.validation.version>
-		<flyway.version>7.7.3</flyway.version>
+		<java.version>17</java.version>
+		<spring.validation.version>3.1.1</spring.validation.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -48,8 +47,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-			<version>${flyway.version}</version>
+			<artifactId>flyway-mysql</artifactId>
 		</dependency>
 	</dependencies>
 

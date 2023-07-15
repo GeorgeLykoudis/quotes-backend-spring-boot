@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:17
 
 MAINTAINER george.lykoudis@yahoo.com
 
