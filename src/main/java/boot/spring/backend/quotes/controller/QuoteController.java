@@ -62,7 +62,7 @@ public class QuoteController {
     @GetMapping
     public ResponseEntity<List<QuoteResponseDto>> findQuotes() {
         List<QuoteResponseDto> quotes = quoteService.findAll();
-        return createNotFoundOrOk(quotes);
+        return ResponseEntity.ok(quotes);
     }
 
     @GetMapping("/paginated")
@@ -82,7 +82,7 @@ public class QuoteController {
     @GetMapping("/search")
     public ResponseEntity<List<QuoteResponseDto>> findQuotesHavingText(@Valid @RequestParam("t") String text) {
         List<QuoteResponseDto> quotes = quoteService.findQuotesHavingText(text);
-        return createNotFoundOrOk(quotes);
+        return ResponseEntity.ok(quotes);
     }
 
     @GetMapping("/search/paginated")
@@ -91,13 +91,6 @@ public class QuoteController {
             @Valid @RequestParam(value = "p", required = false, defaultValue = "0") int page,
             @Valid @RequestParam(value = "s", required = false, defaultValue = "5") int pageSize) {
         QuoteResponsePaginationDto quotes = quoteService.findQuotesHavingText(text, page, pageSize);
-        return ResponseEntity.ok(quotes);
-    }
-
-    private ResponseEntity<List<QuoteResponseDto>> createNotFoundOrOk(List<QuoteResponseDto> quotes) {
-        if (quotes.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(quotes);
     }
 }
