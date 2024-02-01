@@ -1,10 +1,10 @@
 package boot.spring.backend.quotes;
 
-import boot.spring.backend.quotes.converter.QuoteEntityToQuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
 
     public <T> T readJson(String content, Class<T> clazz) throws Exception {
         return objectMapper.readValue(content, clazz);
@@ -49,13 +50,13 @@ public class Utils {
 
     public List<QuoteResponseDto> convertToQuoteResponseDtos() {
         return createQuotesList().stream()
-                .map(QuoteEntityToQuoteResponseDto::convertFrom)
+                .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
                 .collect(Collectors.toList());
     }
 
     public List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
         return quotes.stream()
-                .map(QuoteEntityToQuoteResponseDto::convertFrom)
+                .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
                 .collect(Collectors.toList());
     }
 }

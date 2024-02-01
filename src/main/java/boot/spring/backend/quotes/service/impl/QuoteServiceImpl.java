@@ -1,7 +1,5 @@
 package boot.spring.backend.quotes.service.impl;
 
-import boot.spring.backend.quotes.converter.QuoteEntityToQuoteResponseDto;
-import boot.spring.backend.quotes.converter.QuoteRequestDtoToQuoteEntity;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
@@ -12,6 +10,7 @@ import boot.spring.backend.quotes.repository.QuoteRepository;
 import boot.spring.backend.quotes.service.QuoteCacheService;
 import boot.spring.backend.quotes.service.QuoteService;
 import boot.spring.backend.quotes.utils.Constants;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -37,10 +36,12 @@ public class QuoteServiceImpl implements QuoteService {
     private static final Logger LOG = LoggerFactory.getLogger(QuoteServiceImpl.class);
     private final QuoteRepository quoteRepository;
     private final QuoteCacheService quoteCacheService;
+    private final ModelMapper modelMapper;
 
     public QuoteServiceImpl(QuoteRepository quoteRepository, QuoteCacheService quoteCacheService) {
         this.quoteRepository = quoteRepository;
         this.quoteCacheService = quoteCacheService;
+        this.modelMapper = new ModelMapper();
     }
 
     @Override
@@ -52,10 +53,10 @@ public class QuoteServiceImpl implements QuoteService {
             throw new QuoteAlreadyExistException();
         }
 
-        QuoteEntity quoteToBeSaved = QuoteRequestDtoToQuoteEntity.convertFrom(request);
+        QuoteEntity quoteToBeSaved = modelMapper.map(request, QuoteEntity.class);
         QuoteEntity savedQuote = quoteRepository.save(quoteToBeSaved);
         LOG.info("Saved new quote with id {}", savedQuote.getId());
-        return QuoteEntityToQuoteResponseDto.convertFrom(savedQuote);
+        return modelMapper.map(savedQuote, QuoteResponseDto.class);
     }
 
     @Override
@@ -63,7 +64,7 @@ public class QuoteServiceImpl implements QuoteService {
     public QuoteResponseDto findQuoteById(Long id) {
         LOG.info("Find quote by id {}", id);
         QuoteEntity quote = quoteCacheService.getQuoteById(id);
-        return QuoteEntityToQuoteResponseDto.convertFrom(quote);
+        return modelMapper.map(quote, QuoteResponseDto.class);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class QuoteServiceImpl implements QuoteService {
         quote.setAuthor(quoteRequestDto.getAuthor());
         quote.setText(quoteRequestDto.getText());
         QuoteEntity savedQuote = quoteRepository.save(quote);
-        return QuoteEntityToQuoteResponseDto.convertFrom(savedQuote);
+        return modelMapper.map(savedQuote, QuoteResponseDto.class);
     }
 
     @Override
@@ -104,7 +105,7 @@ public class QuoteServiceImpl implements QuoteService {
 
     private List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
         return quotes.stream()
-                .map(QuoteEntityToQuoteResponseDto::convertFrom)
+                .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
                 .collect(Collectors.toList());
     }
 
@@ -117,7 +118,7 @@ public class QuoteServiceImpl implements QuoteService {
         int randomNumber = getRandomNumber(quoteIds.size());
         LOG.info("Random Quote:");
         QuoteEntity quote = quoteCacheService.getQuoteById(quoteIds.get(randomNumber));
-        return QuoteEntityToQuoteResponseDto.convertFrom(quote);
+        return modelMapper.map(quote, QuoteResponseDto.class);
     }
 
     private int getRandomNumber(int max) {
@@ -128,7 +129,7 @@ public class QuoteServiceImpl implements QuoteService {
     @Override
     public QuoteResponseDto findRandomQuote() {
         QuoteEntity quote = quoteRepository.findRandomQuote();
-        return QuoteEntityToQuoteResponseDto.convertFrom(quote);
+        return modelMapper.map(quote, QuoteResponseDto.class);
     }
 
     @Override

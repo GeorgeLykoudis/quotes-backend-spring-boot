@@ -1,11 +1,13 @@
 FROM openjdk:17
 
-MAINTAINER george.lykoudis@yahoo.com
+LABEL author="g.lykoudis@protonmail.com"
 
 WORKDIR /app
 
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
+RUN chmod +x ./mvnw
+
 RUN ./mvnw dependency:resolve
 
 COPY src ./src

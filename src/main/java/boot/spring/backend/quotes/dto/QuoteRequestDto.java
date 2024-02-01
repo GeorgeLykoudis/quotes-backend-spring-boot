@@ -1,6 +1,5 @@
 package boot.spring.backend.quotes.dto;
 
-import boot.spring.backend.quotes.model.QuoteEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
