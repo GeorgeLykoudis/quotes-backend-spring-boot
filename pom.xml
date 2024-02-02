@@ -13,10 +13,15 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>quotes</name>
 	<description>Quotes Spring Boot Demo Project</description>
+
 	<properties>
 		<java.version>17</java.version>
 		<model.mapper.version>3.1.1</model.mapper.version>
+		<spring.boot.starter.data.redis.version>3.2.1</spring.boot.starter.data.redis.version>
+		<apache.commons.pool.version>2.12.0</apache.commons.pool.version>
+		<jedis.clients.version>5.1.0</jedis.clients.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,6 +59,21 @@
 			<artifactId>modelmapper</artifactId>
 			<version>${model.mapper.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<version>${spring.boot.starter.data.redis.version}</version>
+		</dependency><dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${jedis.clients.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>${apache.commons.pool.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -67,12 +87,12 @@
 
 	<profiles>
 		<profile>
-			<id>mysql</id>
+			<id>dev</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<spring.profiles.active>mysql</spring.profiles.active>
+				<spring.profiles.active>mysql,redis</spring.profiles.active>
 			</properties>
 		</profile>
 	</profiles>

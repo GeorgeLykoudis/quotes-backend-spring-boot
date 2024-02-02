@@ -25,7 +25,7 @@ public class QuoteCacheServiceImpl implements QuoteCacheService {
     }
 
     @Override
-    @Cacheable(value = Constants.QUOTES_CACHE_DB)
+//    @Cacheable(value = Constants.QUOTES_CACHE_DB)
     public QuoteEntity getQuoteById(Long id) {
         return quoteRepository.findById(id).orElseThrow(QuoteNotFoundException::new);
     }

@@ -7,15 +7,14 @@ import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.repository.QuoteRepository;
-import boot.spring.backend.quotes.service.QuoteCacheService;
 import boot.spring.backend.quotes.service.QuoteService;
+import boot.spring.backend.quotes.service.cache.CacheService;
 import boot.spring.backend.quotes.utils.Constants;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,13 +34,23 @@ import java.util.stream.Collectors;
 public class QuoteServiceImpl implements QuoteService {
     private static final Logger LOG = LoggerFactory.getLogger(QuoteServiceImpl.class);
     private final QuoteRepository quoteRepository;
-    private final QuoteCacheService quoteCacheService;
-    private final ModelMapper modelMapper;
+    private final CacheService cacheService;
+    private static final ModelMapper modelMapper = new ModelMapper();
 
-    public QuoteServiceImpl(QuoteRepository quoteRepository, QuoteCacheService quoteCacheService) {
+    public QuoteServiceImpl(QuoteRepository quoteRepository,
+                            CacheService cacheService) {
         this.quoteRepository = quoteRepository;
-        this.quoteCacheService = quoteCacheService;
-        this.modelMapper = new ModelMapper();
+        this.cacheService = cacheService;
+    }
+
+    @Override
+    public QuoteResponseDto findQuoteById(Long id) throws QuoteNotFoundException {
+        LOG.info("Find quote by id {}", id);
+        QuoteEntity quote = cacheService.getQuoteById(id);
+        if (quote == null) {
+            quote = quoteRepository.findById(id).orElseThrow(QuoteNotFoundException::new);
+        }
+        return modelMapper.map(quote, QuoteResponseDto.class);
     }
 
     @Override
@@ -60,19 +69,11 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    @Cacheable(value = Constants.QUOTES_CACHE_DB, key = "#id")
-    public QuoteResponseDto findQuoteById(Long id) {
-        LOG.info("Find quote by id {}", id);
-        QuoteEntity quote = quoteCacheService.getQuoteById(id);
-        return modelMapper.map(quote, QuoteResponseDto.class);
-    }
-
-    @Override
     @Transactional
     @CacheEvict(value = Constants.QUOTES_CACHE_DB, allEntries = true)
     @CachePut(value = Constants.QUOTES_CACHE_DB)
     public QuoteResponseDto updateQuoteById(Long id, QuoteRequestDto quoteRequestDto) {
-        QuoteEntity quote = quoteCacheService.getQuoteById(id);
+        QuoteEntity quote = cacheService.getQuoteById(id);
         LOG.info("Update quote with id {}", id);
         quote.setAuthor(quoteRequestDto.getAuthor());
         quote.setText(quoteRequestDto.getText());
@@ -92,14 +93,14 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public List<QuoteResponseDto> findAll() {
-        List<QuoteEntity> quotes = quoteCacheService.findAll();
+        List<QuoteEntity> quotes = cacheService.findAll();
         return convertToQuoteResponseDtos(quotes);
     }
 
     @Override
     public QuoteResponsePaginationDto findAll(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<QuoteEntity> quotePage = quoteCacheService.findAll(pageable);
+        Page<QuoteEntity> quotePage = cacheService.findAll(pageable);
         return createPaginationResponse(quotePage);
     }
 
@@ -111,13 +112,13 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Deprecated
     public QuoteResponseDto findRandomQuote2() {
-        List<Long> quoteIds = quoteCacheService.getLimitedQuoteIds();
+        List<Long> quoteIds = cacheService.getLimitedQuoteIds();
         if (quoteIds.isEmpty()) {
             return new QuoteResponseDto();
         }
         int randomNumber = getRandomNumber(quoteIds.size());
         LOG.info("Random Quote:");
-        QuoteEntity quote = quoteCacheService.getQuoteById(quoteIds.get(randomNumber));
+        QuoteEntity quote = cacheService.getQuoteById(quoteIds.get(randomNumber));
         return modelMapper.map(quote, QuoteResponseDto.class);
     }
 
@@ -134,14 +135,14 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public List<QuoteResponseDto> findQuotesHavingText(String text) {
-        List<QuoteEntity> quotes = quoteCacheService.findQuotesHavingText(text);
+        List<QuoteEntity> quotes = cacheService.findQuotesHavingText(text);
         return convertToQuoteResponseDtos(quotes);
     }
 
     @Override
     public QuoteResponsePaginationDto findQuotesHavingText(String text, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<QuoteEntity> quotes = quoteCacheService.findQuotesHavingText(text, pageable);
+        Page<QuoteEntity> quotes = cacheService.findQuotesHavingText(text, pageable);
         return createPaginationResponse(quotes);
     }
 

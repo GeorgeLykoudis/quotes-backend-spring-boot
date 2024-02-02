@@ -3,6 +3,7 @@ package boot.spring.backend.quotes.service;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
+import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public interface QuoteService {
     QuoteResponseDto saveQuote(QuoteRequestDto quoteRequestDto);
 
-    QuoteResponseDto findQuoteById(Long id);
+    QuoteResponseDto findQuoteById(Long id) throws QuoteNotFoundException;
 
     QuoteResponseDto updateQuoteById(Long id, QuoteRequestDto quoteRequestDto);
 
