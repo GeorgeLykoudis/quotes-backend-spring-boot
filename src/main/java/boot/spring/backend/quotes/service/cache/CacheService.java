@@ -20,4 +20,6 @@ public interface CacheService {
 
   Page<QuoteEntity> findQuotesHavingText(String text, Pageable pageable);
 
+  void save(QuoteEntity quote);
+
 }

@@ -49,6 +49,7 @@ public class QuoteServiceImpl implements QuoteService {
         QuoteEntity quote = cacheService.getQuoteById(id);
         if (quote == null) {
             quote = quoteRepository.findById(id).orElseThrow(QuoteNotFoundException::new);
+            cacheService.save(quote);
         }
         return modelMapper.map(quote, QuoteResponseDto.class);
     }
