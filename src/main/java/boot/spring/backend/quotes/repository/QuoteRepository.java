@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author George Lykoudis
@@ -21,7 +20,7 @@ public interface QuoteRepository extends JpaRepository<QuoteEntity, Long> {
 
     Page<QuoteEntity> findByTextContaining(String text, Pageable pageable);
 
-    Optional<QuoteEntity> findQuoteByText(String text);
+    boolean existsQuoteByText(String text);
 
     @Query(value = "SELECT * FROM quote ORDER BY RAND() LIMIT 1;", nativeQuery = true)
     QuoteEntity findRandomQuote();

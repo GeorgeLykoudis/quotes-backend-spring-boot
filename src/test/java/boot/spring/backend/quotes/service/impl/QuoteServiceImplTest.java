@@ -22,9 +22,16 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author George Lykoudis
@@ -111,6 +118,7 @@ class QuoteServiceImplTest {
         String updatedAuthor = "authorUpdated";
 
         QuoteRequestDto request = new QuoteRequestDto();
+        request.setId(1L);
         request.setAuthor(updatedText);
         request.setText(updatedText);
 
@@ -127,7 +135,7 @@ class QuoteServiceImplTest {
         when(cacheService.getQuoteById(anyLong())).thenReturn(searchedQuote);
         when(quoteRepository.save(any(QuoteEntity.class))).thenReturn(savedQuote);
 
-        QuoteResponseDto result = quoteService.updateQuoteById(id, request);
+        QuoteResponseDto result = quoteService.updateQuote(request);
 
         verify(cacheService, times(1)).getQuoteById(anyLong());
         verify(quoteRepository, times(1)).save(any(QuoteEntity.class));
@@ -144,7 +152,7 @@ class QuoteServiceImplTest {
         when(cacheService.getQuoteById(anyLong())).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteResponseDto result = quoteService.updateQuoteById(id, new QuoteRequestDto());
+            QuoteResponseDto result = quoteService.updateQuote(new QuoteRequestDto());
             verify(cacheService, times(1)).getQuoteById(anyLong());
             assertNull(result);
         });

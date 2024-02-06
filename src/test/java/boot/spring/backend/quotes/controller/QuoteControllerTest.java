@@ -4,7 +4,6 @@ import boot.spring.backend.quotes.Utils;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.exception.ErrorConstants;
-import boot.spring.backend.quotes.exception.QuoteExceptionHandler;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.service.impl.QuoteServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +21,16 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,7 +56,7 @@ class QuoteControllerTest {
     void setUp() {
         mvc = MockMvcBuilders
                 .standaloneSetup(controller)
-                .setControllerAdvice(new QuoteExceptionHandler())
+                .setControllerAdvice(new QuoteControllerAdvice())
                 .build();
     }
 
@@ -164,7 +170,7 @@ class QuoteControllerTest {
     }
 
     @Test
-    void updateQuoteById_ValidRequest_Success() throws Exception {
+    void updateQuote_ValidRequest_Success() throws Exception {
         long id = 1L;
         String text = "text";
         String author = "author";
@@ -178,7 +184,7 @@ class QuoteControllerTest {
         quote.setText(text);
         quote.setAuthor(author);
 
-        when(service.updateQuoteById(anyLong(), any(QuoteRequestDto.class))).thenReturn(quote);
+        when(service.updateQuote(any(QuoteRequestDto.class))).thenReturn(quote);
 
         mvc.perform(put(BASE_URL + "/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -201,7 +207,7 @@ class QuoteControllerTest {
         request.setText(text);
         request.setAuthor(author);
 
-        when(service.updateQuoteById(anyLong(), any(QuoteRequestDto.class)))
+        when(service.updateQuote(any(QuoteRequestDto.class)))
                 .thenThrow(new QuoteNotFoundException());
 
         mvc.perform(put(BASE_URL + "/{id}", id)

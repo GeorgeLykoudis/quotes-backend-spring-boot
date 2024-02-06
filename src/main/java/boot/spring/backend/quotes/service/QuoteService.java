@@ -16,7 +16,7 @@ public interface QuoteService {
 
     QuoteResponseDto findQuoteById(Long id) throws QuoteNotFoundException;
 
-    QuoteResponseDto updateQuoteById(Long id, QuoteRequestDto quoteRequestDto);
+    QuoteResponseDto updateQuote(QuoteRequestDto quoteRequestDto);
 
     void deleteById(Long id);
 

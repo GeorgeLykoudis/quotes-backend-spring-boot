@@ -1,12 +1,13 @@
 package boot.spring.backend.quotes.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author George Lykoudis
  * @date 7/11/2023
  */
-public class QuoteResponsePaginationDto {
+public class QuoteResponsePaginationDto implements Serializable {
     private List<QuoteResponseDto> quotes;
     private long totalQuotes;
     private int pageSize;

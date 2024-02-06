@@ -1,5 +1,6 @@
 package boot.spring.backend.quotes.service.cache;
 
+import boot.spring.backend.quotes.exception.QuoteInternalException;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,9 +9,11 @@ import java.util.List;
 
 public interface CacheService {
 
-  QuoteEntity getQuoteById(Long id);
+  QuoteEntity findQuoteById(Long id);
 
-  List<Long> getLimitedQuoteIds();
+  void clear() throws QuoteInternalException;
+
+  List<Long> findLimitedQuoteIds();
 
   List<QuoteEntity> findAll();
 

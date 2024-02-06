@@ -1,10 +1,12 @@
 package boot.spring.backend.quotes.dto;
 
+import java.io.Serializable;
+
 /**
  * @author George Lykoudis
  * @date 7/2/2023
  */
-public class QuoteErrorResponseDto {
+public class QuoteErrorResponseDto implements Serializable {
     private int errorCode;
 
     public QuoteErrorResponseDto() {}
