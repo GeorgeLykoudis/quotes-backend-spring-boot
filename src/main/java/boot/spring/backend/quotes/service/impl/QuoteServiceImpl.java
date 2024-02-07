@@ -74,7 +74,7 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    @CacheEvict(value = QUOTE_CACHE, allEntries = true)
+    @CacheEvict(value = QUOTE_CACHE, key = "#id")
     public void deleteById(Long id) {
         if (!quoteRepository.existsById(id)) {
             throw new QuoteNotFoundException();
