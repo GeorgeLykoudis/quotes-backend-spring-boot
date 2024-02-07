@@ -1,4 +1,4 @@
-package boot.spring.backend.quotes.service.impl;
+package boot.spring.backend.quotes.service.db;
 
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
@@ -7,7 +7,6 @@ import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.repository.QuoteRepository;
-import boot.spring.backend.quotes.service.QuoteService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static boot.spring.backend.quotes.service.cache.CacheConstants.QUOTE_CACHE;
@@ -103,7 +100,7 @@ public class QuoteServiceImpl implements QuoteService {
     private List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
         return quotes.stream()
                 .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -114,14 +111,14 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public List<QuoteResponseDto> findQuotesHavingText(String text) {
-        List<QuoteEntity> quotes = new ArrayList<>();
+        List<QuoteEntity> quotes = quoteRepository.findByTextContaining(text);
         return convertToQuoteResponseDtos(quotes);
     }
 
     @Override
     public QuoteResponsePaginationDto findQuotesHavingText(String text, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<QuoteEntity> quotes = null;
+        Page<QuoteEntity> quotes = quoteRepository.findByTextContaining(text, pageable);
         return createPaginationResponse(quotes);
     }
 

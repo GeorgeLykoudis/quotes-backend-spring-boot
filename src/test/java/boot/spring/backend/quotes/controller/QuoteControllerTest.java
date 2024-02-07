@@ -5,7 +5,7 @@ import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.exception.ErrorConstants;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
-import boot.spring.backend.quotes.service.impl.QuoteServiceImpl;
+import boot.spring.backend.quotes.service.db.QuoteServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

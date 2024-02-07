@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "2f127d75-ed57-496a-9edc-29e47c3c8328",
+		"_postman_id": "3cfbf72c-8730-4436-bdd1-f2d5c82dbbd2",
 		"name": "Quotes",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13115373"
+		"_exporter_id": "29848203"
 	},
 	"item": [
 		{
@@ -87,7 +87,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"author\" : \"test author update\",\r\n    \"text\" : \"test text update\"\r\n}",
+					"raw": "{\r\n    \"id\": 1,\r\n    \"author\" : \"test author update 2\",\r\n    \"text\" : \"test text update 2\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -95,7 +95,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/api/v1/quotes/1",
+					"raw": "localhost:8080/api/v1/quotes",
 					"host": [
 						"localhost"
 					],
@@ -103,8 +103,7 @@
 					"path": [
 						"api",
 						"v1",
-						"quotes",
-						"1"
+						"quotes"
 					]
 				}
 			},
@@ -157,7 +156,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/api/v1/quotes/paginated?p=0&s=3",
+					"raw": "localhost:8080/api/v1/quotes/paginated?p=0&s=2",
 					"host": [
 						"localhost"
 					],
@@ -175,7 +174,7 @@
 						},
 						{
 							"key": "s",
-							"value": "3"
+							"value": "2"
 						}
 					]
 				}
@@ -261,6 +260,27 @@
 							"key": "s",
 							"value": "3"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh Cache",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/v1/quotes/refresh",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"quotes",
+						"refresh"
 					]
 				}
 			},

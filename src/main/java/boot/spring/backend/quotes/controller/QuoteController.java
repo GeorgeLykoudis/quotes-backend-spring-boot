@@ -3,7 +3,8 @@ package boot.spring.backend.quotes.controller;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
-import boot.spring.backend.quotes.service.QuoteService;
+import boot.spring.backend.quotes.service.cache.CacheService;
+import boot.spring.backend.quotes.service.db.QuoteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,11 @@ import java.util.List;
 public class QuoteController {
 
     private final QuoteService quoteService;
+    private final CacheService cacheService;
 
-    public QuoteController(QuoteService quoteService) {
+    public QuoteController(QuoteService quoteService, CacheService cacheService) {
         this.quoteService = quoteService;
+      this.cacheService = cacheService;
     }
 
     @PostMapping
@@ -91,5 +94,11 @@ public class QuoteController {
             @Valid @RequestParam(value = "s", required = false, defaultValue = "5") int pageSize) {
         QuoteResponsePaginationDto quotes = quoteService.findQuotesHavingText(text, page, pageSize);
         return ResponseEntity.ok(quotes);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refresh() {
+        cacheService.clear();
+        return ResponseEntity.noContent().build();
     }
 }
