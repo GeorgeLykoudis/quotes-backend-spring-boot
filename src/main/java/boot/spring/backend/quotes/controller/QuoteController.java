@@ -46,7 +46,7 @@ public class QuoteController {
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<QuoteResponseDto> updateQuoteById(@Valid @RequestBody QuoteRequestDto quoteRequestDto) {
         QuoteResponseDto quoteResponse = quoteService.updateQuote(quoteRequestDto);
         return ResponseEntity.ok(quoteResponse);

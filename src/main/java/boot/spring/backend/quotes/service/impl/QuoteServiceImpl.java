@@ -65,8 +65,7 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @Transactional
-    @CacheEvict(value = QUOTE_CACHE, allEntries = true)
-    @CachePut(value = QUOTE_CACHE)
+    @CachePut(value = QUOTE_CACHE, key = "#quoteRequestDto.id")
     public QuoteResponseDto updateQuote(QuoteRequestDto quoteRequestDto) {
         LOG.info("Update quote with id {}", quoteRequestDto.getId());
         QuoteEntity quote = modelMapper.map(quoteRequestDto, QuoteEntity.class);
