@@ -31,8 +31,9 @@ public class QuoteController {
     private final QuoteService quoteService;
     private final CacheService cacheService;
 
-    public QuoteController(QuoteService quoteService, CacheService cacheService) {
-        this.quoteService = quoteService;
+    public QuoteController(QuoteService quoteService,
+                           CacheService cacheService) {
+      this.quoteService = quoteService;
       this.cacheService = cacheService;
     }
 
@@ -50,7 +51,7 @@ public class QuoteController {
 
 
     @PutMapping
-    public ResponseEntity<QuoteResponseDto> updateQuoteById(@Valid @RequestBody QuoteRequestDto quoteRequestDto) {
+    public ResponseEntity<QuoteResponseDto> updateQuote(@Valid @RequestBody QuoteRequestDto quoteRequestDto) {
         QuoteResponseDto quoteResponse = quoteService.updateQuote(quoteRequestDto);
         return ResponseEntity.ok(quoteResponse);
     }

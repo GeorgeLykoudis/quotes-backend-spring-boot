@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static boot.spring.backend.quotes.service.cache.CacheConstants.QUOTE_CACHE;
 
@@ -62,10 +61,10 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @Transactional
-    @CachePut(value = QUOTE_CACHE, key = "#quoteRequestDto.id")
+    @CachePut(value = QUOTE_CACHE, key = "#request.id")
     public QuoteResponseDto updateQuote(QuoteRequestDto request) throws QuoteNotFoundException {
-        if (quoteRepository.existsById(request.getId())) {
-            throw new QuoteAlreadyExistException();
+        if (!quoteRepository.existsById(request.getId())) {
+            throw new QuoteNotFoundException();
         }
         LOG.info("Update quote with id {}", request.getId());
         QuoteEntity quote = modelMapper.map(request, QuoteEntity.class);
