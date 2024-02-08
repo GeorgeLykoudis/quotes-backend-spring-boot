@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ModelMapper modelMapper = new ModelMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ModelMapper modelMapper = new ModelMapper();
 
     public <T> T readJson(String content, Class<T> clazz) throws Exception {
         return objectMapper.readValue(content, clazz);
@@ -27,36 +27,38 @@ public class Utils {
         return objectMapper.readValue(content, typeReference);
     }
 
-    public <T> String toJson(T content) throws Exception {
+    public static <T> String toJson(T content) throws Exception {
         return objectMapper.writeValueAsString(content);
     }
 
-    public List<QuoteEntity> createQuotesList() {
+    public static List<QuoteEntity> createQuotesList() {
         List<QuoteEntity> quotes = new ArrayList<>();
-        QuoteEntity q1 = new QuoteEntity();
-        q1.setId(1L);
-        q1.setText("text 1");
-        q1.setAuthor("author 1");
+        QuoteEntity q1 = QuoteEntity.builder()
+            .id(1L)
+            .text("text 1")
+            .author("author 1")
+            .build();
         quotes.add(q1);
 
-        QuoteEntity q2 = new QuoteEntity();
-        q2.setId(2L);
-        q2.setText("text 2");
-        q2.setAuthor("author 2");
+        QuoteEntity q2 = QuoteEntity.builder()
+            .id(2L)
+            .text("text 2")
+            .author("author 2")
+            .build();
         quotes.add(q2);
 
         return quotes;
     }
 
-    public List<QuoteResponseDto> convertToQuoteResponseDtos() {
+    public static List<QuoteResponseDto> convertToQuoteResponseDtos() {
         return createQuotesList().stream()
                 .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
+    public static List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
         return quotes.stream()
                 .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

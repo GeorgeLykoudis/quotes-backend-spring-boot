@@ -7,8 +7,6 @@ import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.model.QuoteEntity;
 import boot.spring.backend.quotes.repository.QuoteRepository;
-import boot.spring.backend.quotes.service.QuoteCacheService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,27 +42,25 @@ class QuoteServiceImplTest {
     @Mock
     QuoteRepository quoteRepository;
 
-    @Mock
-    QuoteCacheService cacheService;
-
     @InjectMocks
     QuoteServiceImpl quoteService;
 
-    Utils utils = new Utils();
 
     @Test
     void saveQuote_Success() {
         long id = 1L;
         String text = "text";
         String author = "author";
-        QuoteEntity savedQuote = new QuoteEntity();
-        savedQuote.setId(id);
-        savedQuote.setText(text);
-        savedQuote.setAuthor(author);
+        QuoteEntity savedQuote = QuoteEntity.builder()
+            .id(id)
+            .author(author)
+            .text(text)
+            .build();
 
-        QuoteRequestDto request = new QuoteRequestDto();
-        request.setAuthor(author);
-        request.setText(text);
+        QuoteRequestDto request = QuoteRequestDto.builder()
+            .author(author)
+            .text(text)
+            .build();
 
         when(quoteRepository.save(any(QuoteEntity.class))).thenReturn(savedQuote);
         QuoteResponseDto result = quoteService.saveQuote(request);
@@ -80,15 +77,16 @@ class QuoteServiceImplTest {
         Long id = 1L;
         String text = "text";
         String author = "author";
-        QuoteEntity searchedQuote = new QuoteEntity();
-        searchedQuote.setId(id);
-        searchedQuote.setText(text);
-        searchedQuote.setAuthor(author);
+        QuoteEntity searchedQuote = QuoteEntity.builder()
+            .id(id)
+            .author(author)
+            .text(text)
+            .build();
 
-        when(cacheService.getQuoteById(anyLong())).thenReturn(searchedQuote);
-        QuoteEntity result = cacheService.getQuoteById(id);
+        when(quoteRepository.findById(anyLong())).thenReturn(Optional.of(searchedQuote));
+        QuoteResponseDto result = quoteService.findQuoteById(id);
 
-        verify(cacheService, times(1)).getQuoteById(anyLong());
+        verify(quoteRepository, times(1)).findById(anyLong());
 
         assertNotNull(result);
         assertEquals(id, result.getId());
@@ -99,12 +97,11 @@ class QuoteServiceImplTest {
     @Test
     void findQuoteById_NonExistentQuote_ThrowsQuoteNotFoundException() {
         Long id = 1L;
-
-        when(cacheService.getQuoteById(anyLong())).thenThrow(QuoteNotFoundException.class);
+        when(quoteRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteEntity result = cacheService.getQuoteById(id);
-            verify(cacheService, times(1)).getQuoteById(anyLong());
+            QuoteResponseDto result = quoteService.findQuoteById(id);
+            verify(quoteRepository, times(1)).findById(anyLong());
             assertNull(result);
         });
     }
@@ -117,27 +114,24 @@ class QuoteServiceImplTest {
         String updatedText = "textUpdated";
         String updatedAuthor = "authorUpdated";
 
-        QuoteRequestDto request = new QuoteRequestDto();
-        request.setId(1L);
-        request.setAuthor(updatedText);
-        request.setText(updatedText);
+        QuoteRequestDto request = QuoteRequestDto.builder()
+            .id(id)
+            .author(author)
+            .text(text)
+            .build();
 
-        QuoteEntity searchedQuote = new QuoteEntity();
-        searchedQuote.setId(id);
-        searchedQuote.setText(text);
-        searchedQuote.setAuthor(author);
+        QuoteEntity savedQuote = QuoteEntity.builder()
+            .id(id)
+            .author(updatedAuthor)
+            .text(updatedText)
+            .build();
 
-        QuoteEntity savedQuote = new QuoteEntity();
-        savedQuote.setId(id);
-        savedQuote.setText(updatedText);
-        savedQuote.setAuthor(updatedAuthor);
-
-        when(cacheService.getQuoteById(anyLong())).thenReturn(searchedQuote);
+        when(quoteRepository.existsById(anyLong())).thenReturn(true);
         when(quoteRepository.save(any(QuoteEntity.class))).thenReturn(savedQuote);
 
         QuoteResponseDto result = quoteService.updateQuote(request);
 
-        verify(cacheService, times(1)).getQuoteById(anyLong());
+        verify(quoteRepository, times(1)).existsById(anyLong());
         verify(quoteRepository, times(1)).save(any(QuoteEntity.class));
         assertNotNull(result);
         assertEquals(id, result.getId());
@@ -149,11 +143,11 @@ class QuoteServiceImplTest {
     void updateQuoteById_NonExistentQuote_ThrowsQuoteNotFoundException() {
         long id = 1L;
 
-        when(cacheService.getQuoteById(anyLong())).thenThrow(QuoteNotFoundException.class);
+        when(quoteRepository.existsById(anyLong())).thenReturn(false);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteResponseDto result = quoteService.updateQuote(new QuoteRequestDto());
-            verify(cacheService, times(1)).getQuoteById(anyLong());
+            QuoteResponseDto result = quoteService.updateQuote(QuoteRequestDto.builder().id(id).build());
+            verify(quoteRepository, times(1)).existsById(anyLong());
             assertNull(result);
         });
     }
@@ -163,18 +157,12 @@ class QuoteServiceImplTest {
         long id = 1L;
 
         when(quoteRepository.existsById(anyLong())).thenReturn(true);
-        when(cacheService.getQuoteById(anyLong())).thenThrow(QuoteNotFoundException.class);
+        doNothing().when(quoteRepository).deleteById(anyLong());
 
         quoteService.deleteById(id);
 
         verify(quoteRepository, times(1)).existsById(anyLong());
         verify(quoteRepository, times(1)).deleteById(anyLong());
-        assertThrows(QuoteNotFoundException.class, () -> {
-           QuoteResponseDto quote = quoteService.findQuoteById(anyLong());
-            verify(cacheService, times(1)).getQuoteById(anyLong());
-            assertNull(quote);
-        });
-
     }
 
     @Test
@@ -191,14 +179,14 @@ class QuoteServiceImplTest {
 
     @Test
     void findAll_Success() {
-        List<QuoteEntity> searchedQuotes = utils.createQuotesList();
-        List<QuoteResponseDto> searchedQuoteResponseDtos = utils.convertToQuoteResponseDtos(searchedQuotes);
+        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
+        List<QuoteResponseDto> searchedQuoteResponseDtos = Utils.convertToQuoteResponseDtos(searchedQuotes);
 
-        when(cacheService.findAll()).thenReturn(searchedQuotes);
+        when(quoteRepository.findAll()).thenReturn(searchedQuotes);
 
         List<QuoteResponseDto> result = quoteService.findAll();
 
-        verify(cacheService, times(1)).findAll();
+        verify(quoteRepository, times(1)).findAll();
         assertNotNull(result);
         assertEquals(searchedQuotes.size(), result.size());
 
@@ -217,58 +205,55 @@ class QuoteServiceImplTest {
 
     @Test
     void findAll_EmptyTable_ThrowsQuoteNotFoundException() {
-        when(cacheService.findAll()).thenThrow(QuoteNotFoundException.class);
+        when(quoteRepository.findAll()).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
             List<QuoteResponseDto> quotes = quoteService.findAll();
-            verify(cacheService.findAll(), times(1));
+            verify(quoteRepository.findAll(), times(1));
             assertNull(quotes);
         });
     }
 
     @Test
     void findAll_Paginated_Success() {
-        List<QuoteEntity> searchedQuotes = utils.createQuotesList();
+        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
 
         int page = 0;
         int pageSize = searchedQuotes.size();
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<QuoteEntity> pageQuotes = new PageImpl<>(searchedQuotes, pageable, searchedQuotes.size());
 
-        when(cacheService.findAll(any(Pageable.class))).thenReturn(pageQuotes);
+        when(quoteRepository.findAll(any(Pageable.class))).thenReturn(pageQuotes);
 
         QuoteResponsePaginationDto result = quoteService.findAll(page, pageSize);
 
-        verify(cacheService, times(1)).findAll(any(Pageable.class));
+        verify(quoteRepository, times(1)).findAll(any(Pageable.class));
         assertNotNull(result);
         assertEquals(searchedQuotes.size(), result.getQuotes().size());
     }
 
     @Test
     void findAll_Paginated_EmptyResponse_ThrowsQuoteNotFoundException() {
-        when(cacheService.findAll(any(Pageable.class))).thenThrow(QuoteNotFoundException.class);
+        when(quoteRepository.findAll(any(Pageable.class))).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
             QuoteResponsePaginationDto result = quoteService.findAll(0, 1);
-            verify(cacheService, times(1)).findAll(any(Pageable.class));
+            verify(quoteRepository, times(1)).findAll(any(Pageable.class));
             assertNull(result);
         });
     }
 
     @Test
     void findRandomQuote_Success() {
-        List<QuoteEntity> searchedQuotes = utils.createQuotesList();
-        List<Long> ids = searchedQuotes.stream().map(QuoteEntity::getId).collect(Collectors.toList());
+        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
         QuoteEntity quote1 = searchedQuotes.get(0);
 
-//        when(cacheService.getLimitedQuoteIds()).thenReturn(ids);
-//        when(cacheService.getQuoteById(anyLong())).thenReturn(quote1);
         when(quoteRepository.findRandomQuote()).thenReturn(quote1);
 
         QuoteResponseDto result = quoteService.findRandomQuote();
 
         verify(quoteRepository, times(1)).findRandomQuote();
-//        verify(cacheService, times(1)).getQuoteById(anyLong());
+
         assertNotNull(result);
         assertEquals(quote1.getId(), result.getId());
         assertEquals(quote1.getText(), result.getText());
@@ -276,44 +261,16 @@ class QuoteServiceImplTest {
     }
 
     @Test
-    @Disabled
-    void findRandomQuote_EmptyResponse_ThrowsQuoteTableEmptyException() {
-        when(cacheService.getLimitedQuoteIds()).thenThrow(QuoteNotFoundException.class);
-
-        assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteResponseDto result = quoteService.findRandomQuote();
-            verify(cacheService, times(1)).getLimitedQuoteIds();
-            assertNotNull(result);
-        });
-    }
-
-    @Test
-    void findRandomQuote_EmptyResponse_ThrowsQuoteNotFoundException() {
-        List<QuoteEntity> searchedQuotes = utils.createQuotesList();
-        List<Long> ids = searchedQuotes.stream().map(QuoteEntity::getId).collect(Collectors.toList());
-
-        when(cacheService.getLimitedQuoteIds()).thenReturn(ids);
-        when(cacheService.getQuoteById(anyLong())).thenThrow(QuoteNotFoundException.class);
-
-        assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteResponseDto result = quoteService.findRandomQuote();
-            verify(cacheService, times(1)).getLimitedQuoteIds();
-            verify(cacheService, times(1)).getQuoteById(anyLong());
-            assertNotNull(result);
-        });
-    }
-
-    @Test
     void findQuoteDtosHavingText_Success() {
-        List<QuoteEntity> searchedQuotes = utils.createQuotesList();
-        List<QuoteResponseDto> searchedQuoteResponseDtos = utils.convertToQuoteResponseDtos(searchedQuotes);
+        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
+        List<QuoteResponseDto> searchedQuoteResponseDtos = Utils.convertToQuoteResponseDtos(searchedQuotes);
         String searchedString = "test";
 
-        when(cacheService.findQuotesHavingText(anyString())).thenReturn(searchedQuotes);
+        when(quoteRepository.findByTextContaining(anyString())).thenReturn(searchedQuotes);
 
         List<QuoteResponseDto> result = quoteService.findQuotesHavingText(searchedString);
 
-        verify(cacheService, times(1)).findQuotesHavingText(anyString());
+        verify(quoteRepository, times(1)).findByTextContaining(anyString());
         assertNotNull(result);
         assertEquals(searchedQuoteResponseDtos.size(), result.size());
 
@@ -331,46 +288,20 @@ class QuoteServiceImplTest {
     }
 
     @Test
-    void findQuoteDtosHavingText_EmptyResponse_ThrowsQuoteNotFoundException() {
-        String searchedString = "test";
-
-        when(cacheService.findQuotesHavingText(anyString())).thenThrow(QuoteNotFoundException.class);
-
-        assertThrows(QuoteNotFoundException.class, () -> {
-            List<QuoteResponseDto> result = quoteService.findQuotesHavingText(searchedString);
-            verify(cacheService, times(1)).findQuotesHavingText(anyString());
-            assertNull(result);
-        });
-    }
-
-    @Test
     void findQuoteDtosHavingText_Paginated_Success() {
-        List<QuoteEntity> searchedQuotes = utils.createQuotesList();
+        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
         String searchedString = "test";
         int page = 0;
         int pageSize = searchedQuotes.size();
 
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<QuoteEntity> pageQuotes = new PageImpl<>(searchedQuotes, pageable, searchedQuotes.size());
-        when(cacheService.findQuotesHavingText(anyString(), any(Pageable.class))).thenReturn(pageQuotes);
+        when(quoteRepository.findByTextContaining(anyString(), any(Pageable.class))).thenReturn(pageQuotes);
 
         QuoteResponsePaginationDto result = quoteService.findQuotesHavingText(searchedString, page, pageSize);
 
-        verify(cacheService, times(1)).findQuotesHavingText(anyString(), any(Pageable.class));
+        verify(quoteRepository, times(1)).findByTextContaining(anyString(), any(Pageable.class));
         assertNotNull(result);
         assertEquals(searchedQuotes.size(), result.getQuotes().size());
-    }
-
-    @Test
-    void findQuoteDtosHavingText_Paginated_EmptyResponse_ThrowsQuoteNotFoundException() {
-        String searchedString = "test";
-
-        when(cacheService.findQuotesHavingText(anyString(), any(Pageable.class))).thenThrow(QuoteNotFoundException.class);
-
-        assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteResponsePaginationDto result = quoteService.findQuotesHavingText(searchedString, 0, 1);
-            verify(cacheService, times(1)).findQuotesHavingText(anyString(), any(Pageable.class));
-            assertNull(result);
-        });
     }
 }

@@ -4,10 +4,11 @@ import boot.spring.backend.quotes.Utils;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.exception.ErrorConstants;
+import boot.spring.backend.quotes.exception.QuoteInternalException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
-import boot.spring.backend.quotes.service.db.QuoteServiceImpl;
+import boot.spring.backend.quotes.service.cache.CacheService;
+import boot.spring.backend.quotes.service.db.QuoteService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,17 +41,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ExtendWith(MockitoExtension.class)
 class QuoteControllerTest {
-    MockMvc mvc;
 
     @Mock
-    QuoteServiceImpl service;
+    QuoteService service;
+    
+    @Mock
+    CacheService cacheService;
 
     @InjectMocks
     QuoteController controller;
-    Utils utils = new Utils();
+    MockMvc mvc;
 
-    String BASE_URL = "/api/v1/quotes";
-    String ERROR_CODE_RESPONSE_KEY = "$.errorCode";
+    final String BASE_URL = "/api/v1/quotes";
+    final String ERROR_CODE_RESPONSE_KEY = "$.errorCode";
 
     @BeforeEach
     void setUp() {
@@ -65,59 +68,55 @@ class QuoteControllerTest {
         long id = 1L;
         String text = "text";
         String author = "author";
+        QuoteRequestDto request = QuoteRequestDto.builder()
+            .author(author)
+            .text(text)
+            .build();
 
-        QuoteRequestDto request = new QuoteRequestDto();
-        request.setText(text);
-        request.setAuthor(author);
+        QuoteResponseDto quoteResponseDto = QuoteResponseDto.builder()
+            .id(id)
+            .author(author)
+            .text(text)
+            .build();
 
-        QuoteResponseDto quote = new QuoteResponseDto();
-        quote.setId(id);
-        quote.setText(text);
-        quote.setAuthor(author);
-
-        when(service.saveQuote(any(QuoteRequestDto.class))).thenReturn(quote);
+        when(service.saveQuote(any(QuoteRequestDto.class))).thenReturn(quoteResponseDto);
 
         mvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(utils.toJson(request)))
+                        .content(Utils.toJson(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.text").value(text))
-                .andExpect(jsonPath("$.author").value(author))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath("$.author").value(author));
     }
 
     @Test
     void createQuote_NotValidRequest_EmptyTextField_ThrowsMethodArgumentNotValidException() throws Exception {
-        String text = "";
-        String author = "author";
-        QuoteRequestDto request = new QuoteRequestDto();
-        request.setText(text);
-        request.setAuthor(author);
+        QuoteRequestDto request = QuoteRequestDto.builder()
+            .author("author")
+            .text("")
+            .build();
 
         mvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(utils.toJson(request)))
+                        .content(Utils.toJson(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.TYPE_MISMATCH_EXCEPTION_MESSAGE.getCode()))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
+                    .value(ErrorConstants.TYPE_MISMATCH_EXCEPTION_MESSAGE.getCode()));
     }
 
     @Test
     void createQuote_NotValidRequest_NullTextField_ThrowsMethodArgumentNotValidException() throws Exception {
-        String author = "author";
-        QuoteRequestDto request = new QuoteRequestDto();
-        request.setAuthor(author);
+        QuoteRequestDto request = QuoteRequestDto.builder()
+            .author("author")
+            .build();
 
         mvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(utils.toJson(request)))
+                        .content(Utils.toJson(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.TYPE_MISMATCH_EXCEPTION_MESSAGE.getCode()))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
+                    .value(ErrorConstants.TYPE_MISMATCH_EXCEPTION_MESSAGE.getCode()));
 
     }
 
@@ -127,10 +126,11 @@ class QuoteControllerTest {
         String text = "text";
         String author = "author";
 
-        QuoteResponseDto quoteResponseDto = new QuoteResponseDto();
-        quoteResponseDto.setId(id);
-        quoteResponseDto.setText(text);
-        quoteResponseDto.setAuthor(author);
+        QuoteResponseDto quoteResponseDto = QuoteResponseDto.builder()
+            .id(id)
+            .author(author)
+            .text(text)
+            .build();
 
         when(service.findQuoteById(anyLong())).thenReturn(quoteResponseDto);
 
@@ -138,9 +138,7 @@ class QuoteControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.text").value(text))
-                .andExpect(jsonPath("$.author").value(author))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath("$.author").value(author));
     }
 
     @Test
@@ -151,9 +149,8 @@ class QuoteControllerTest {
 
         mvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.QUOTE_NOT_FOUND.getCode()))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
+                    .value(ErrorConstants.QUOTE_NOT_FOUND.getCode()));
     }
 
     @Test
@@ -164,9 +161,8 @@ class QuoteControllerTest {
 
         mvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.TYPE_MISMATCH_EXCEPTION_MESSAGE.getCode()))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
+                    .value(ErrorConstants.TYPE_MISMATCH_EXCEPTION_MESSAGE.getCode()));
     }
 
     @Test
@@ -175,26 +171,28 @@ class QuoteControllerTest {
         String text = "text";
         String author = "author";
 
-        QuoteRequestDto request = new QuoteRequestDto();
-        request.setText(text);
-        request.setAuthor(author);
+        QuoteRequestDto request = QuoteRequestDto.builder()
+            .id(id)
+            .author(author)
+            .text(text)
+            .build();
 
-        QuoteResponseDto quote = new QuoteResponseDto();
-        quote.setId(id);
-        quote.setText(text);
-        quote.setAuthor(author);
+        String updatedText = "text2";
+        QuoteResponseDto quoteResponseDto = QuoteResponseDto.builder()
+            .id(id)
+            .author(author)
+            .text(updatedText)
+            .build();
 
-        when(service.updateQuote(any(QuoteRequestDto.class))).thenReturn(quote);
+        when(service.updateQuote(any(QuoteRequestDto.class))).thenReturn(quoteResponseDto);
 
-        mvc.perform(put(BASE_URL + "/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(utils.toJson(request)))
+        mvc.perform(put(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Utils.toJson(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.text").value(text))
-                .andExpect(jsonPath("$.author").value(author))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath("$.text").value(updatedText))
+                .andExpect(jsonPath("$.author").value(author));
     }
 
     @Test
@@ -203,20 +201,20 @@ class QuoteControllerTest {
         String text = "text";
         String author = "author";
 
-        QuoteRequestDto request = new QuoteRequestDto();
-        request.setText(text);
-        request.setAuthor(author);
+        QuoteRequestDto request = QuoteRequestDto.builder()
+            .id(id)
+            .author(author)
+            .text(text)
+            .build();
 
-        when(service.updateQuote(any(QuoteRequestDto.class)))
-                .thenThrow(new QuoteNotFoundException());
+        when(service.updateQuote(any(QuoteRequestDto.class))).thenThrow(new QuoteNotFoundException());
 
-        mvc.perform(put(BASE_URL + "/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(utils.toJson(request)))
+        mvc.perform(put(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Utils.toJson(request)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.QUOTE_NOT_FOUND.getCode()))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
+                    .value(ErrorConstants.QUOTE_NOT_FOUND.getCode()));
     }
 
     @Test
@@ -226,9 +224,7 @@ class QuoteControllerTest {
         doNothing().when(service).deleteById(anyLong());
 
         mvc.perform(delete(BASE_URL + "/{id}", id))
-                .andExpect(status().isNoContent())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -239,35 +235,29 @@ class QuoteControllerTest {
 
         mvc.perform(delete(BASE_URL + "/{id}", id))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.QUOTE_NOT_FOUND.getCode()))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
+                    .value(ErrorConstants.QUOTE_NOT_FOUND.getCode()));
     }
 
     @Test
     void findQuotes_Success() throws Exception {
-        List<QuoteResponseDto> quoteResponseDtos = utils.convertToQuoteResponseDtos();
+        List<QuoteResponseDto> quoteResponseDtos = Utils.convertToQuoteResponseDtos();
 
         when(service.findAll()).thenReturn(quoteResponseDtos);
 
         mvc.perform(get(BASE_URL))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isOk());
     }
 
     @Test
-    @Disabled
-    void findQuotes_EmptyTable_ThrowsQuoteTableEmptyException() throws Exception {
+    void findQuotes_EmptyTable_ReturnsEmptyList() throws Exception {
         List<QuoteResponseDto> quoteResponse = new ArrayList<>();
 
         when(service.findAll()).thenReturn(quoteResponse);
 
         mvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.QUOTE_NOT_FOUND.getCode())) // TODO
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test
@@ -276,10 +266,11 @@ class QuoteControllerTest {
         String text = "test";
         String author = "author";
 
-        QuoteResponseDto quote = new QuoteResponseDto();
-        quote.setId(id);
-        quote.setText(text);
-        quote.setAuthor(author);
+        QuoteResponseDto quote = QuoteResponseDto.builder()
+            .id(id)
+            .author(author)
+            .text(text)
+            .build();
 
         when(service.findRandomQuote()).thenReturn(quote);
 
@@ -287,53 +278,44 @@ class QuoteControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.text").value(text))
-                .andExpect(jsonPath("$.author").value(author))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath("$.author").value(author));
     }
 
     @Test
-    @Disabled
     void findRandomQuote_EmptyTable_ThrowsQuoteTableEmptyException() throws Exception {
 
         when(service.findRandomQuote()).thenThrow(new QuoteNotFoundException());
 
         mvc.perform(get(BASE_URL + "/random"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.QUOTE_NOT_FOUND.getCode()))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
+                    .value(ErrorConstants.QUOTE_NOT_FOUND.getCode()));
     }
 
     @Test
     void findRandomQuote_CouldNotFindQuote_ThrowsQuoteNotFoundException() throws Exception {
-        long id = 1L;
-
         when(service.findRandomQuote()).thenThrow(new QuoteNotFoundException());
 
         mvc.perform(get(BASE_URL + "/random"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY).value(ErrorConstants.QUOTE_NOT_FOUND.getCode()))
-                .andReturn()
-                .getResponse();
+                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
+                    .value(ErrorConstants.QUOTE_NOT_FOUND.getCode()));
     }
 
     @Test
     void findQuotesHavingText_ValidRequest_Success() throws Exception {
-        List<QuoteResponseDto> quotes = utils.convertToQuoteResponseDtos();
+        List<QuoteResponseDto> quotes = Utils.convertToQuoteResponseDtos();
         String searchString = "searchFor";
 
         when(service.findQuotesHavingText(anyString())).thenReturn(quotes);
 
         mvc.perform(get(BASE_URL + "/search")
                         .param("t", searchString))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isOk());
     }
 
     @Test
-    void findQuotesHavingText_ValidRequest_NotFound() throws Exception {
+    void findQuotesHavingText_ValidRequest_EmptyList() throws Exception {
         List<QuoteResponseDto> quotes = new ArrayList<>();
         String searchString = "searchFor";
 
@@ -341,9 +323,24 @@ class QuoteControllerTest {
 
         mvc.perform(get(BASE_URL + "/search")
                         .param("t", searchString))
-                .andExpect(status().isNotFound())
-                .andReturn()
-                .getResponse();
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void clearCache_ValidResponse() throws Exception {
+        doNothing().when(cacheService).clear();
+
+        mvc.perform(post(BASE_URL + "/refresh"))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void clearCache_InternalError() throws Exception {
+        doThrow(new QuoteInternalException()).when(cacheService).clear();
+
+        mvc.perform(post(BASE_URL + "/refresh"))
+            .andExpect(status().isInternalServerError());
     }
 
 }
