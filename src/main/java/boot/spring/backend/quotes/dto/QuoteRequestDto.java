@@ -11,22 +11,23 @@ import java.io.Serializable;
  * @date 6/29/2023
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class QuoteRequestDto implements Serializable {
-    private Long id;
+public class QuoteRequestDto extends QuoteBaseDto {
     private String author;
 
     @NotNull(message = "Text cannot be null")
     @NotBlank(message = "Text cannot be empty")
     private String text;
 
-    public QuoteRequestDto() {}
-
-    public Long getId() {
-        return id;
+    public QuoteRequestDto() {
+        super();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public QuoteRequestDto(Long id) {
+        super(id);
+    }
+
+    public static QuoteRequestDtoBuilder builder() {
+        return new QuoteRequestDtoBuilder();
     }
 
     public String getAuthor() {
@@ -43,5 +44,30 @@ public class QuoteRequestDto implements Serializable {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public static class QuoteRequestDtoBuilder {
+        private final QuoteRequestDto instance = new QuoteRequestDto();
+
+        private QuoteRequestDtoBuilder() {}
+
+        public QuoteRequestDto build() {
+            return this.instance;
+        }
+
+        public QuoteRequestDtoBuilder id(Long id) {
+            instance.setId(id);
+            return this;
+        }
+
+        public QuoteRequestDtoBuilder author(String author) {
+            instance.author = author;
+            return this;
+        }
+
+        public QuoteRequestDtoBuilder text(String text) {
+            instance.text = text;
+            return this;
+        }
     }
 }

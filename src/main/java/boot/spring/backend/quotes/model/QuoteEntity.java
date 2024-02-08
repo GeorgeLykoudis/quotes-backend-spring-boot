@@ -60,4 +60,31 @@ public class QuoteEntity {
     public int hashCode() {
         return getId() != null ? getId().hashCode() : 0;
     }
+
+    public static QuoteEntityBuilder builder() {
+        return new QuoteEntityBuilder();
+    }
+
+    public static class QuoteEntityBuilder {
+        private final QuoteEntity instance = new QuoteEntity();
+
+        public QuoteEntity build() {
+            return this.instance;
+        }
+
+        public QuoteEntityBuilder id(Long id) {
+            this.instance.id = id;
+            return this;
+        }
+
+        public QuoteEntityBuilder author(String author) {
+            instance.author = author;
+            return this;
+        }
+
+        public QuoteEntityBuilder text(String text) {
+            this.instance.text = text;
+            return this;
+        }
+    }
 }
