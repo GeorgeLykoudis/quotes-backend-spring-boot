@@ -10,6 +10,7 @@ import boot.spring.backend.quotes.repository.QuoteRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,6 +29,7 @@ import static boot.spring.backend.quotes.service.cache.CacheConstants.QUOTE_CACH
  * @date 6/29/2023
  */
 @Service
+@CacheConfig(cacheNames = QUOTE_CACHE)
 public class QuoteServiceImpl implements QuoteService {
     private static final Logger LOG = LoggerFactory.getLogger(QuoteServiceImpl.class);
     private final QuoteRepository quoteRepository;
@@ -38,7 +40,7 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    @Cacheable(value = QUOTE_CACHE, key = "#id")
+    @Cacheable(key = "#id")
     public QuoteResponseDto findQuoteById(Long id) throws QuoteNotFoundException {
         LOG.info("Find quote by id {}", id);
         QuoteEntity quote = quoteRepository.findById(id).orElseThrow(QuoteNotFoundException::new);
@@ -47,7 +49,7 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @Transactional
-    @CacheEvict(value = QUOTE_CACHE, allEntries = true)
+    @CacheEvict(allEntries = true)
     public QuoteResponseDto saveQuote(QuoteRequestDto request) throws QuoteAlreadyExistException {
         if (quoteRepository.existsQuoteByText(request.getText())) {
             throw new QuoteAlreadyExistException();
@@ -61,7 +63,7 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @Transactional
-    @CachePut(value = QUOTE_CACHE, key = "#request.id")
+    @CachePut(key = "#request.id")
     public QuoteResponseDto updateQuote(QuoteRequestDto request) throws QuoteNotFoundException {
         if (!quoteRepository.existsById(request.getId())) {
             throw new QuoteNotFoundException();
@@ -73,7 +75,7 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    @CacheEvict(value = QUOTE_CACHE, key = "#id")
+    @CacheEvict(key = "#id")
     public void deleteById(Long id) throws QuoteNotFoundException {
         if (!quoteRepository.existsById(id)) {
             throw new QuoteNotFoundException();
@@ -89,7 +91,7 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    @Cacheable(value = QUOTE_CACHE, key = "{#page, #pageSize}")
+    @Cacheable(key = "{#page, #pageSize}")
     public QuoteResponsePaginationDto findAll(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<QuoteEntity> quotePage = quoteRepository.findAll(pageable);
