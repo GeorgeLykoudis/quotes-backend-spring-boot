@@ -26,7 +26,7 @@ public class LoginRequest {
     }
 
     public static class LoginRequestBuilder {
-        private LoginRequest instance = new LoginRequest();
+        private final LoginRequest instance = new LoginRequest();
 
         public LoginRequestBuilder email(String email) {
             this.instance.email = email;
