@@ -46,30 +46,30 @@ public class UserPrincipal implements UserDetails {
         return true;
     }
 
-//    public static UserPrincipalBuilder builder() {
-//        return new UserPrincipalBuilder();
-//    }
-//
-//    public static class UserPrincipalBuilder {
-//        private final UserPrincipal instance = new UserPrincipal();
-//
-//        public UserPrincipalBuilder userId(Long userId) {
-//            this.instance.userId = userId;
-//            return this;
-//        }
-//
-//        public UserPrincipalBuilder email(String email) {
-//            this.instance.email = email;
-//            return this;
-//        }
-//
-//        public UserPrincipalBuilder authorities(Collection<? extends GrantedAuthority> authorities) {
-//            this.instance.authorities = authorities;
-//            return this;
-//        }
-//
-//        public UserPrincipal build() {
-//            return this.instance;
-//        }
-//    }
+    public static UserPrincipalBuilder builder() {
+        return new UserPrincipalBuilder();
+    }
+
+    public static class UserPrincipalBuilder {
+        private final UserPrincipal instance = new UserPrincipal();
+
+        public UserPrincipalBuilder userId(Long userId) {
+            this.instance.userId = userId;
+            return this;
+        }
+
+        public UserPrincipalBuilder email(String email) {
+            this.instance.email = email;
+            return this;
+        }
+
+        public UserPrincipalBuilder authorities(Collection<? extends GrantedAuthority> authorities) {
+            this.instance.authorities = authorities;
+            return this;
+        }
+
+        public UserPrincipal build() {
+            return this.instance;
+        }
+    }
 }
