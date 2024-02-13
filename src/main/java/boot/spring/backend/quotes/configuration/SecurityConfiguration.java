@@ -23,7 +23,8 @@ public class SecurityConfiguration {
         .formLogin(FormLoginConfigurer::disable)
         .securityMatcher("/api/v1/quotes/**") // TODO CHECK
         .authorizeHttpRequests(registry -> registry
-            .requestMatchers("/api/v1/quotes/**").permitAll())  // TODO CHECK
+            .requestMatchers("/api/v1/quotes/**").permitAll()  // TODO CHECK
+            .requestMatchers("auth/login").permitAll())  // TODO CHECK
         .httpBasic(Customizer.withDefaults())
         .build();
   }

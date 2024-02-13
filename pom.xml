@@ -20,6 +20,7 @@
 		<spring.boot.starter.data.redis.version>3.2.1</spring.boot.starter.data.redis.version>
 		<apache.commons.pool.version>2.12.0</apache.commons.pool.version>
 		<jedis.clients.version>5.1.0</jedis.clients.version>
+		<java.jwt.version>4.3.0</java.jwt.version>
 	</properties>
 
 	<dependencies>
@@ -78,6 +79,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>${java.jwt.version}</version>
 		</dependency>
 	</dependencies>
 
