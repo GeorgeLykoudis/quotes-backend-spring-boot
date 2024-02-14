@@ -4,7 +4,7 @@ import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.service.cache.CacheService;
-import boot.spring.backend.quotes.service.db.QuoteService;
+import boot.spring.backend.quotes.service.quotes.QuoteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

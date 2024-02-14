@@ -1,4 +1,4 @@
-package boot.spring.backend.quotes.service.db;
+package boot.spring.backend.quotes.service.quotes;
 
 import boot.spring.backend.quotes.Utils;
 import boot.spring.backend.quotes.dto.QuoteRequestDto;

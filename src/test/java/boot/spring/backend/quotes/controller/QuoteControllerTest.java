@@ -7,7 +7,7 @@ import boot.spring.backend.quotes.exception.ErrorConstants;
 import boot.spring.backend.quotes.exception.QuoteInternalException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.service.cache.CacheService;
-import boot.spring.backend.quotes.service.db.QuoteService;
+import boot.spring.backend.quotes.service.quotes.QuoteService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
