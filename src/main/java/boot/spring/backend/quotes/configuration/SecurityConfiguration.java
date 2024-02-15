@@ -1,14 +1,19 @@
 package boot.spring.backend.quotes.configuration;
 
 import boot.spring.backend.quotes.security.JwtAuthenticationFilter;
+import boot.spring.backend.quotes.security.UserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -17,9 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final UserDetailsService userDetailsService;
 
-  public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter) {
+  public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter,
+                               UserDetailsService userDetailsService) {
       this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.userDetailsService = userDetailsService;
   }
 
   @Bean
@@ -37,6 +45,16 @@ public class SecurityConfiguration {
         )
         .httpBasic(HttpBasicConfigurer::disable)
         .build();
+  }
+
+  @Bean // TODO fix this
+  public PasswordEncoder passwordEncoder() {
+    return NoOpPasswordEncoder.getInstance();//new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    return configuration.getAuthenticationManager();
   }
 
 }

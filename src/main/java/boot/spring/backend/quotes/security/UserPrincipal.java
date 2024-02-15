@@ -1,5 +1,6 @@
 package boot.spring.backend.quotes.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,6 +10,8 @@ public class UserPrincipal implements UserDetails {
 
     private Long userId;
     private String email;
+    @JsonIgnore
+    private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
     @Override
@@ -18,7 +21,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
@@ -73,6 +76,11 @@ public class UserPrincipal implements UserDetails {
 
         public UserPrincipalBuilder authorities(Collection<? extends GrantedAuthority> authorities) {
             this.instance.authorities = authorities;
+            return this;
+        }
+
+        public UserPrincipalBuilder password(String password) {
+            this.instance.password = password;
             return this;
         }
 
