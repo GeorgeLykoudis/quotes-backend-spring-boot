@@ -23,7 +23,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     return UserPrincipal.builder()
         .userId(user.getId())
         .email(user.getEmail())
-        .authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
+        .authorities(List.of(new SimpleGrantedAuthority(user.getRole().name())))
         .password(user.getPassword())
         .build();
   }

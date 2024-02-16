@@ -1,7 +1,11 @@
 package boot.spring.backend.quotes.model;
 
+import boot.spring.backend.quotes.model.security.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,7 +21,9 @@ public class UserEntity {
   private String email;
   @JsonIgnore
   private String password;
-  private String role;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role")
+  private Role role;
 
   public Long getId() {
     return id;
@@ -43,11 +49,11 @@ public class UserEntity {
     this.password = password;
   }
 
-  public String getRole() {
+  public Role getRole() {
     return role;
   }
 
-  public void setRole(String role) {
+  public void setRole(Role role) {
     this.role = role;
   }
 }
