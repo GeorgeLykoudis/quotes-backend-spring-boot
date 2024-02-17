@@ -18,4 +18,12 @@ public class UserService {
   public Optional<UserEntity> findByEmail(String email) {
     return userRepository.findByEmail(email);
   }
+
+  public boolean existsByEmail(String email) {
+    return userRepository.existsByEmail(email);
+  }
+
+  public UserEntity save(UserEntity userEntity) {
+    return userRepository.save(userEntity);
+  }
 }

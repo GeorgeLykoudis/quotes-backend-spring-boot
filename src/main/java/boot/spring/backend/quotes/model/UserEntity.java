@@ -56,4 +56,31 @@ public class UserEntity {
   public void setRole(Role role) {
     this.role = role;
   }
+
+  public static UserEntityBuilder builder() {
+    return new UserEntityBuilder();
+  }
+
+  public static class UserEntityBuilder {
+    private UserEntity instance = new UserEntity();
+
+    public UserEntityBuilder email(String email) {
+      this.instance.email = email;
+      return this;
+    }
+
+    public UserEntityBuilder password(String password) {
+      this.instance.password = password;
+      return this;
+    }
+
+    public UserEntityBuilder role(Role role) {
+      this.instance.role = role;
+      return this;
+    }
+
+    public UserEntity build() {
+      return this.instance;
+    }
+  }
 }

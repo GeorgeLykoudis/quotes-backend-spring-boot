@@ -12,7 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -40,16 +40,16 @@ public class SecurityConfiguration {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .formLogin(FormLoginConfigurer::disable)
         .authorizeHttpRequests(registry -> registry
-            .requestMatchers("auth/login").permitAll()
+            .requestMatchers("auth/**").permitAll()
             .anyRequest().authenticated()
         )
         .httpBasic(HttpBasicConfigurer::disable)
         .build();
   }
 
-  @Bean // TODO fix this
+  @Bean
   public PasswordEncoder passwordEncoder() {
-    return NoOpPasswordEncoder.getInstance();//new BCryptPasswordEncoder();
+    return new BCryptPasswordEncoder();
   }
 
   @Bean
