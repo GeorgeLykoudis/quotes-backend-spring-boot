@@ -1,6 +1,6 @@
 package boot.spring.backend.quotes.configuration;
 
-import boot.spring.backend.quotes.security.JwtAuthenticationFilter;
+import boot.spring.backend.quotes.jwt.JwtAuthenticationFilter;
 import boot.spring.backend.quotes.security.UserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,24 +26,24 @@ public class SecurityConfiguration {
 
   public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter,
                                UserDetailsService userDetailsService) {
-      this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     this.userDetailsService = userDetailsService;
   }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
     return http
         .cors(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .formLogin(FormLoginConfigurer::disable)
+        .httpBasic(HttpBasicConfigurer::disable)
         .authorizeHttpRequests(registry -> registry
             .requestMatchers("auth/**").permitAll()
             .anyRequest().authenticated()
         )
-        .httpBasic(HttpBasicConfigurer::disable)
+        .userDetailsService(userDetailsService)
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }
 

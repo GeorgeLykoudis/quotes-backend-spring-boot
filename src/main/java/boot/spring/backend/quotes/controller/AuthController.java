@@ -3,6 +3,7 @@ package boot.spring.backend.quotes.controller;
 import boot.spring.backend.quotes.dto.auth.LoginRequest;
 import boot.spring.backend.quotes.dto.auth.LoginResponse;
 import boot.spring.backend.quotes.dto.auth.RegisterRequest;
+import boot.spring.backend.quotes.dto.auth.RegisterResponse;
 import boot.spring.backend.quotes.exception.UserAlreadyExistsException;
 import boot.spring.backend.quotes.service.auth.AuthService;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +25,11 @@ public class AuthController {
 
   @PostMapping("/login")
   public LoginResponse login(@RequestBody @Validated LoginRequest request) {
-      return authService.attemptLogin(request.getEmail(), request.getPassword());
+      return authService.login(request.getUsername(), request.getPassword());
   }
 
   @PostMapping("/register")
-  public ResponseEntity<String> register(@RequestBody RegisterRequest request) throws UserAlreadyExistsException {
-    return ResponseEntity.ok(authService.attemptRegister(request));
+  public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) throws UserAlreadyExistsException {
+    return ResponseEntity.ok(authService.register(request));
   }
 }

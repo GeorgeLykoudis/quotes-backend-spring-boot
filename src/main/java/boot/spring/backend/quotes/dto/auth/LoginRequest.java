@@ -2,15 +2,15 @@ package boot.spring.backend.quotes.dto.auth;
 
 public class LoginRequest {
 
-    private String email;
+    private String username;
     private String password;
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -29,7 +29,7 @@ public class LoginRequest {
         private final LoginRequest instance = new LoginRequest();
 
         public LoginRequestBuilder email(String email) {
-            this.instance.email = email;
+            this.instance.username = email;
             return this;
         }
 

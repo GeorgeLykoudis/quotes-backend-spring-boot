@@ -2,14 +2,14 @@ package boot.spring.backend.quotes.dto.auth;
 
 public class LoginResponse {
 
-    private String accessToken;
+    private String token;
 
-    public String getAccessToken() {
-        return accessToken;
+    public String getToken() {
+        return token;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public static LoginResponseBuilder builder() {
@@ -20,7 +20,7 @@ public class LoginResponse {
         private final LoginResponse instance = new LoginResponse();
 
         public LoginResponseBuilder accessToken(String accessToken) {
-            this.instance.accessToken = accessToken;
+            this.instance.token = accessToken;
             return this;
         }
 

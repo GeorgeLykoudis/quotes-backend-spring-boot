@@ -2,55 +2,49 @@ package boot.spring.backend.quotes.service.auth;
 
 import boot.spring.backend.quotes.dto.auth.LoginResponse;
 import boot.spring.backend.quotes.dto.auth.RegisterRequest;
+import boot.spring.backend.quotes.dto.auth.RegisterResponse;
 import boot.spring.backend.quotes.exception.UserAlreadyExistsException;
+import boot.spring.backend.quotes.jwt.JwtHelper;
 import boot.spring.backend.quotes.model.UserEntity;
 import boot.spring.backend.quotes.model.security.Role;
-import boot.spring.backend.quotes.security.JwtIssuer;
-import boot.spring.backend.quotes.security.UserPrincipal;
 import boot.spring.backend.quotes.service.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-  private final JwtIssuer jwtIssuer;
+  private final JwtHelper jwtHelper;
   private final AuthenticationManager authenticationManager;
   private final UserService userService;
   private final PasswordEncoder passwordEncoder;
 
-  public AuthService(JwtIssuer jwtIssuer,
+  public AuthService(JwtHelper jwtHelper,
                      AuthenticationManager authenticationManager,
                      UserService userService,
                      PasswordEncoder passwordEncoder) {
-    this.jwtIssuer = jwtIssuer;
+    this.jwtHelper = jwtHelper;
     this.authenticationManager = authenticationManager;
     this.userService = userService;
     this.passwordEncoder = passwordEncoder;
   }
 
-  public LoginResponse attemptLogin(String email, String password) {
-    var authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(email, password));
+  public LoginResponse login(String email, String password) {
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(email, password)
+    );
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    var principal = (UserPrincipal) authentication.getPrincipal();
-    var roles = principal.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .toList();
-
-    var token = jwtIssuer.issue(principal.getUserId(), principal.getEmail(), roles);
+    UserEntity userEntity = userService.findByEmail(email).orElseThrow();
+    String token = jwtHelper.generateJwt(userEntity);
 
     return LoginResponse.builder()
         .accessToken(token)
         .build();
   }
 
-  public String attemptRegister(RegisterRequest request) throws UserAlreadyExistsException {
+  public RegisterResponse register(RegisterRequest request) throws UserAlreadyExistsException {
     if (userService.existsByEmail(request.getUsername())) {
       throw new UserAlreadyExistsException("User already in use");
     }
@@ -61,7 +55,8 @@ public class AuthService {
             .role(Role.ROLE_USER)
             .build();
 
-    userService.save(userEntity);
-    return "User register success";
+    UserEntity savedUser = userService.save(userEntity);
+    String token = jwtHelper.generateJwt(savedUser);
+    return new RegisterResponse(token);
   }
 }

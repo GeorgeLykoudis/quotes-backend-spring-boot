@@ -1,4 +1,4 @@
-package boot.spring.backend.quotes.security;
+package boot.spring.backend.quotes.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
