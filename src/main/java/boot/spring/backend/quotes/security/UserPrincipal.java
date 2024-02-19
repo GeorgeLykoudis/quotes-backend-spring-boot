@@ -53,10 +53,6 @@ public class UserPrincipal implements UserDetails {
         return userId;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public static UserPrincipalBuilder builder() {
         return new UserPrincipalBuilder();
     }
