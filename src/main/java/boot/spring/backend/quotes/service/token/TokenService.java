@@ -34,4 +34,16 @@ public class TokenService {
   public Optional<TokenEntity> findByToken(String token) {
     return tokenRepository.findByToken(token);
   }
+
+  public void revokeAllUserTokens(UserEntity user) {
+    var validUserTokens = findValidTokensByUser(user.getId());
+    if (validUserTokens.isEmpty()) {
+      return;
+    }
+    validUserTokens.forEach(t -> {
+      t.setRevoked(true);
+      t.setExpired(true);
+    });
+    tokenRepository.saveAll(validUserTokens);
+  }
 }

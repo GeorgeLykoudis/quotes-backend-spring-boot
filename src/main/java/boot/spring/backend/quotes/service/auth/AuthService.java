@@ -36,6 +36,7 @@ public class AuthService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  @Transactional
   public LoginResponse login(String email, String password) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(email, password)
@@ -43,6 +44,7 @@ public class AuthService {
 
     UserEntity userEntity = userService.findByEmail(email).orElseThrow();
     String token = jwtHelper.generateJwt(userEntity);
+    tokenService.revokeAllUserTokens(userEntity);
     tokenService.save(token, userEntity);
     return LoginResponse.builder()
         .accessToken(token)

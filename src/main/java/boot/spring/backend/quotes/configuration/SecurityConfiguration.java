@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                                CustomAccessDeniedHandler accessDeniedHandler) {
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     this.userDetailsService = userDetailsService;
-      this.accessDeniedHandler = accessDeniedHandler;
+    this.accessDeniedHandler = accessDeniedHandler;
   }
 
   @Bean
