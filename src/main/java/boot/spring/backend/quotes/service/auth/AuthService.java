@@ -43,7 +43,7 @@ public class AuthService {
 
     UserEntity userEntity = userService.findByEmail(email).orElseThrow();
     String token = jwtHelper.generateJwt(userEntity);
-
+    tokenService.save(token, userEntity);
     return LoginResponse.builder()
         .accessToken(token)
         .build();

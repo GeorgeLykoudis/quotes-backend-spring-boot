@@ -5,6 +5,9 @@ import boot.spring.backend.quotes.model.security.TokenEntity;
 import boot.spring.backend.quotes.repository.TokenRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class TokenService {
 
@@ -22,5 +25,13 @@ public class TokenService {
         .revoked(false)
         .build();
     return tokenRepository.save(tokenEntity);
+  }
+
+  public List<TokenEntity> findValidTokensByUser(Long id) {
+    return tokenRepository.findAllValidTokensByUser(id);
+  }
+
+  public Optional<TokenEntity> findByToken(String token) {
+    return tokenRepository.findByToken(token);
   }
 }
