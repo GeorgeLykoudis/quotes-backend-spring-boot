@@ -17,6 +17,10 @@ public class TokenService {
     this.tokenRepository = tokenRepository;
   }
 
+  public TokenEntity save(TokenEntity tokenEntity) {
+    return tokenRepository.save(tokenEntity);
+  }
+
   public TokenEntity save(String token, UserEntity user) {
     TokenEntity tokenEntity = TokenEntity.builder()
         .userEntity(user)

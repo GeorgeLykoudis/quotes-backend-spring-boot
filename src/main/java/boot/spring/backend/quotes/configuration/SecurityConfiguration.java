@@ -13,11 +13,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -26,13 +28,16 @@ public class SecurityConfiguration {
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final UserDetailsService userDetailsService;
   private final CustomAccessDeniedHandler accessDeniedHandler;
+  private final LogoutHandler logoutHandler;
 
   public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter,
                                UserDetailsService userDetailsService,
-                               CustomAccessDeniedHandler accessDeniedHandler) {
+                               CustomAccessDeniedHandler accessDeniedHandler,
+                               LogoutHandler logoutHandler) {
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     this.userDetailsService = userDetailsService;
     this.accessDeniedHandler = accessDeniedHandler;
+    this.logoutHandler = logoutHandler;
   }
 
   @Bean
@@ -51,6 +56,10 @@ public class SecurityConfiguration {
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .logout(logout -> logout.logoutUrl("/auth/logout")
+            .addLogoutHandler(logoutHandler)
+            .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext()))
+        )
         .build();
   }
 
