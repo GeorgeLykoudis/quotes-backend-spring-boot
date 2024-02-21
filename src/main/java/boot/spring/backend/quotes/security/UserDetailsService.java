@@ -1,11 +1,9 @@
 package boot.spring.backend.quotes.security;
 
+import boot.spring.backend.quotes.model.UserEntity;
 import boot.spring.backend.quotes.service.user.UserService;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
@@ -17,13 +15,13 @@ public class UserDetailsService implements org.springframework.security.core.use
   }
 
   @Override
-  public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
+  public UserEntity loadUserByUsername(String username) throws UsernameNotFoundException {
     var user = userService.findByEmail(username).orElseThrow();
 
-    return UserPrincipal.builder()
-        .userId(user.getId())
+    return UserEntity.builder()
+        .id(user.getId())
         .email(user.getEmail())
-        .authorities(List.of(new SimpleGrantedAuthority(user.getRole().name())))
+        .role(user.getRole())
         .password(user.getPassword())
         .build();
   }

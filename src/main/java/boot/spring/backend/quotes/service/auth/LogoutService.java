@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -23,7 +22,7 @@ public class LogoutService implements LogoutHandler {
   public void logout(HttpServletRequest request,
                      HttpServletResponse response,
                      Authentication authentication) {
-    Optional<String> tokenOptional = extractTokenFromRequest(request);
+    Optional<String> tokenOptional = AuthServiceUtils.extractTokenFromRequest(request);
     if (tokenOptional.isEmpty()) {
       return;
     }
@@ -34,13 +33,5 @@ public class LogoutService implements LogoutHandler {
       storedToken.setRevoked(true);
       tokenService.save(storedToken);
     }
-  }
-
-  private Optional<String> extractTokenFromRequest(HttpServletRequest request) {
-    var token = request.getHeader("Authorization");
-    if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-      return Optional.of(token.substring(7));
-    }
-    return Optional.empty();
   }
 }

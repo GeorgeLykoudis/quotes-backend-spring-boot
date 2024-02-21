@@ -1,37 +1,41 @@
 package boot.spring.backend.quotes.jwt;
 
 import boot.spring.backend.quotes.model.UserEntity;
-import boot.spring.backend.quotes.security.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
 public class JwtHelper {
   private static final String JWT_CLAIM_AUTHORITY = "a";
-  private static final Duration JWT_DURATION = Duration.ofDays(1L);
-  private static final Date JWT_EXPIRATION = new Date(Instant.now().plus(JWT_DURATION).toEpochMilli());
   private final JwtProperties properties;
 
   public JwtHelper(JwtProperties properties) {
     this.properties = properties;
   }
 
-  public String generateJwt(UserEntity user) {
+  public String generateToken(UserEntity user) {
+    return buildToken(user, properties.getExpiration());
+  }
+
+  public String generateRefreshToken(UserEntity user) {
+    return buildToken(user, properties.getRefreshTokenExpiration());
+  }
+
+  private String buildToken(UserEntity user, long expiration) {
     return Jwts
         .builder()
         .setSubject(user.getEmail())
         .setIssuedAt(new Date())
-        .setExpiration(JWT_EXPIRATION)
-        .signWith(getSigningKey())
+        .setExpiration(new Date(System.currentTimeMillis() + expiration))
+        .signWith(getSigningKey(), SignatureAlgorithm.HS256)
         .claim(JWT_CLAIM_AUTHORITY, user.getRole())
         .compact();
   }
@@ -41,9 +45,9 @@ public class JwtHelper {
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public boolean isValid(String token, UserPrincipal principal) {
+  public boolean isTokenValid(String token, UserEntity userEntity) {
     String username = extractUserName(token);
-    return username.equals(principal.getUsername()) &&
+    return username.equals(userEntity.getUsername()) &&
         !isTokenExpired(token);
   }
 

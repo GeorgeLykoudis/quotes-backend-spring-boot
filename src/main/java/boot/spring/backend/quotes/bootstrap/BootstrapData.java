@@ -39,11 +39,11 @@ public class BootstrapData implements CommandLineRunner {
         UserEntity userEntity = UserEntity.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .role(Role.ROLE_ADMIN)
+                .role(Role.ADMIN)
                 .build();
 
         UserEntity savedUser = userService.save(userEntity);
-        String token = jwtHelper.generateJwt(savedUser);
+        String token = jwtHelper.generateToken(savedUser);
 
         tokenService.save(token, savedUser);
     }

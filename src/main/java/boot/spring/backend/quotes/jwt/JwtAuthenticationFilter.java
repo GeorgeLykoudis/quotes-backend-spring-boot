@@ -1,7 +1,8 @@
 package boot.spring.backend.quotes.jwt;
 
+import boot.spring.backend.quotes.model.UserEntity;
 import boot.spring.backend.quotes.security.UserDetailsService;
-import boot.spring.backend.quotes.security.UserPrincipal;
+import boot.spring.backend.quotes.service.auth.AuthServiceUtils;
 import boot.spring.backend.quotes.service.token.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -37,8 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   HttpServletResponse response,
                                   FilterChain filterChain)
           throws ServletException, IOException {
-
-    Optional<String> tokenOptional = extractTokenFromRequest(request);
+    Optional<String> tokenOptional = AuthServiceUtils.extractTokenFromRequest(request);
     if (tokenOptional.isEmpty()) {
       filterChain.doFilter(request, response);
       return;
@@ -47,13 +46,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String token = tokenOptional.get();
     String username = jwtHelper.extractUserName(token);
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      UserPrincipal userPrincipal = userDetailsService.loadUserByUsername(username);
+      UserEntity userEntity = userDetailsService.loadUserByUsername(username);
       boolean isTokenValid = tokenService.findByToken(token)
           .map(t -> !t.isExpired() && !t.isRevoked())
           .orElse(false);
-      if (jwtHelper.isValid(token, userPrincipal) && isTokenValid) {
+      if (jwtHelper.isTokenValid(token, userEntity) && isTokenValid) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-            userPrincipal, null, userPrincipal.getAuthorities()
+            userEntity, null, userEntity.getAuthorities()
         );
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -61,13 +60,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
     }
     filterChain.doFilter(request, response);
-  }
-
-  private Optional<String> extractTokenFromRequest(HttpServletRequest request) {
-      var token = request.getHeader("Authorization");
-      if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-          return Optional.of(token.substring(7));
-      }
-      return Optional.empty();
   }
 }

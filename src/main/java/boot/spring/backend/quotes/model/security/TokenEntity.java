@@ -1,7 +1,6 @@
 package boot.spring.backend.quotes.model.security;
 
 import boot.spring.backend.quotes.model.UserEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,7 +24,7 @@ public class TokenEntity {
   private TokenType tokenType = TokenType.BEARER;
   private boolean revoked;
   private boolean expired;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private UserEntity userEntity;
 
