@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
  * @date 6/29/2023
  */
 @Entity
-@Table(name = "quote")
+@Table(name = "quotes")
 public class Quote {
 
     @Id

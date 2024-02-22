@@ -20,25 +20,37 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @Column(name = "email")
   private String email;
   @JsonIgnore
+  @Column(name = "password")
   private String password;
   @Enumerated(EnumType.STRING)
   @Column(name = "role")
   private Role role;
   @OneToMany(mappedBy = "user")
   private List<Token> tokens;
-  public Long getId() {
-    return id;
+
+  public User() { super(); }
+
+  public User(Long id) { super(id); }
+
+  public User(String email, String password, Role role, List<Token> tokens) {
+    super();
+    this.email = email;
+    this.password = password;
+    this.role = role;
+    this.tokens = tokens;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public User(Long id, String email, String password, Role role, List<Token> tokens) {
+    super(id);
+    this.email = email;
+    this.password = password;
+    this.role = role;
+    this.tokens = tokens;
   }
 
   public String getEmail() {
@@ -112,7 +124,7 @@ public class User implements UserDetails {
     private final User instance = new User();
 
     public UserBuilder id(Long id) {
-      this.instance.id = id;
+      this.instance.setId(id);
       return this;
     }
 
