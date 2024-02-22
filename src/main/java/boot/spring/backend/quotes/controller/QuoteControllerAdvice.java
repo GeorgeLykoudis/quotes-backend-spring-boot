@@ -1,6 +1,7 @@
 package boot.spring.backend.quotes.controller;
 
 import boot.spring.backend.quotes.dto.quotes.QuoteErrorResponseDto;
+import boot.spring.backend.quotes.exception.ChangePasswordException;
 import boot.spring.backend.quotes.exception.ErrorConstants;
 import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteInternalException;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -17,7 +19,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
  * @author George Lykoudis
  * @date 6/29/2023
  */
-//@ControllerAdvice
+@ControllerAdvice
 public class QuoteControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -54,6 +56,11 @@ public class QuoteControllerAdvice {
     @ExceptionHandler(QuoteInternalException.class)
     public ResponseEntity<Void> handleQuoteInternalException(QuoteInternalException e) {
         return ResponseEntity.internalServerError().build();
+    }
+
+    @ExceptionHandler(ChangePasswordException.class)
+    public ResponseEntity<Void> handleChangePasswordException(ChangePasswordException e) {
+        return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(Exception.class)
