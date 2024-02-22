@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "3cfbf72c-8730-4436-bdd1-f2d5c82dbbd2",
+		"_postman_id": "f12c4878-ed15-4232-ac90-d1272b149479",
 		"name": "Quotes",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29848203"
+		"_exporter_id": "13115373"
 	},
 	"item": [
 		{
@@ -41,7 +41,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\" : \"test5@gmail.com\",\n    \"password\": \"test\",\n    \"firstName\": \"George\",\n    \"lastName\": \"Lykoudis\",\n    \"birthDate\": \"03/01/1992\"\n}",
+							"raw": "{\n    \"username\" : \"test1@gmail.com\",\n    \"password\": \"test\",\n    \"firstName\": \"George\",\n    \"lastName\": \"Lykoudis\",\n    \"birthDate\": \"03/01/1992\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -71,7 +71,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\" : \"test1@gmail.com\",\n    \"password\": \"test\"\n}",
+							"raw": "{\n    \"username\" : \"test1@gmail.com\",\n    \"password\": \"test1\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -99,7 +99,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJpYXQiOjE3MDg1MzcxOTEsImV4cCI6MTcwOTE0MTk5MSwiYSI6IlVTRVIifQ.vFeEgCmlhoza6UFsNNwTMUvmJCdfR-Q_c5E9u5AyeGU",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJpYXQiOjE3MDg2Mzc0NDEsImV4cCI6MTcwODYzNzUwMSwiYSI6IlVTRVIifQ.zNhSvjm97rs9wBv_zEhV1aLPFfY40p7hBl1SpWFdALU",
 									"type": "string"
 								}
 							]
@@ -160,6 +160,42 @@
 							"path": [
 								"{{auth}}",
 								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJpYXQiOjE3MDg2Mzc4NjUsImV4cCI6MTcwODYzNzkyNSwiYSI6IlVTRVIifQ.yZkozIyKnCojyIO_zhwFVCE5ky-3lMspe82pHod0ITw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"test1\",\n    \"newPassword\": \"test2\",\n    \"confirmationPassword\": \"test1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/users",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"users"
 							]
 						}
 					},
