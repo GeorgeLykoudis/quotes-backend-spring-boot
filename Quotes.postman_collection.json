@@ -15,14 +15,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/actuator",
-							"protocol": "http",
+							"raw": "{{endpoint}}/{{actuator}}",
 							"host": [
-								"localhost"
+								"{{endpoint}}"
 							],
-							"port": "8080",
 							"path": [
-								"actuator"
+								"{{actuator}}"
 							]
 						}
 					},
@@ -43,7 +41,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\" : \"test1@gmail.com\",\n    \"password\": \"test\"\n}",
+							"raw": "{\n    \"username\" : \"test5@gmail.com\",\n    \"password\": \"test\",\n    \"firstName\": \"George\",\n    \"lastName\": \"Lykoudis\",\n    \"birthDate\": \"03/01/1992\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -51,14 +49,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/auth/register",
-							"protocol": "http",
+							"raw": "{{endpoint}}/{{auth}}/register",
 							"host": [
-								"localhost"
+								"{{endpoint}}"
 							],
-							"port": "8080",
 							"path": [
-								"auth",
+								"{{auth}}",
 								"register"
 							]
 						}
@@ -83,15 +79,87 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/auth/login",
-							"protocol": "http",
+							"raw": "{{endpoint}}/{{auth}}/login",
 							"host": [
-								"localhost"
+								"{{endpoint}}"
 							],
-							"port": "8080",
 							"path": [
-								"auth",
+								"{{auth}}",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJpYXQiOjE3MDg1MzcxOTEsImV4cCI6MTcwOTE0MTk5MSwiYSI6IlVTRVIifQ.vFeEgCmlhoza6UFsNNwTMUvmJCdfR-Q_c5E9u5AyeGU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/{{auth}}/logout",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{auth}}",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RefreshToken",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJpYXQiOjE3MDg1MzgwMjQsImV4cCI6MTcwOTE0MjgyNCwiYSI6IlVTRVIifQ.IjCzX6R-eNkxp1GK_ULyk-Ift5Rk_iImQyxXi-q9gWs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/{{auth}}/refresh-token",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{auth}}",
+								"refresh-token"
 							]
 						}
 					},
@@ -100,242 +168,231 @@
 			]
 		},
 		{
-			"name": "Get Quote By Id",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes/1",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Quote",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"author\" : \"test author\",\r\n    \"text\" : \"test text\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Quote By Id",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": 1,\r\n    \"author\" : \"test author update 2\",\r\n    \"text\" : \"test text update 2\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Quote By Id",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes/1",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Quotes",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Quotes With Pagination",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes/paginated?p=0&s=2",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes",
-						"paginated"
-					],
-					"query": [
-						{
-							"key": "p",
-							"value": "0"
+			"name": "Quotes",
+			"item": [
+				{
+					"name": "Get Quote By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJpYXQiOjE3MDg1OTI3NDQsImV4cCI6MTcwODU5MjgwNCwiYSI6IlVTRVIifQ.fKQ2Ii9IyfEWyswSxIEnduAs0GwrcXtznMQPtW5aJ6M",
+									"type": "string"
+								}
+							]
 						},
-						{
-							"key": "s",
-							"value": "2"
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}/1",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}",
+								"1"
+							]
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Random Quote",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes/random",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes",
-						"random"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Quotes Containing Text",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes/search?t=test",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes",
-						"search"
-					],
-					"query": [
-						{
-							"key": "t",
-							"value": "test"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Quotes Containing Text With Pagination",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:8080/api/v1/quotes/search/paginated?t=test&p=0&s=3",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"v1",
-						"quotes",
-						"search",
-						"paginated"
-					],
-					"query": [
-						{
-							"key": "t",
-							"value": "test"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Quote",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"author\" : \"test author\",\r\n    \"text\" : \"test text\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
-						{
-							"key": "p",
-							"value": "0"
-						},
-						{
-							"key": "s",
-							"value": "3"
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}/quotes",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}",
+								"quotes"
+							]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "Update Quote By Id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"author\" : \"test author update 2\",\r\n    \"text\" : \"test text update 2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}quotes",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}quotes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Quote By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}/1",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Quotes",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Quotes With Pagination",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}/paginated?p=0&s=2",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "p",
+									"value": "0"
+								},
+								{
+									"key": "s",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Random Quote",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}/random",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}",
+								"random"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Quotes Containing Text",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}/search?t=test",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}",
+								"search"
+							],
+							"query": [
+								{
+									"key": "t",
+									"value": "test"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Quotes Containing Text With Pagination",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/{{quotes}}/search/paginated?t=test&p=0&s=3",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"{{quotes}}",
+								"search",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "t",
+									"value": "test"
+								},
+								{
+									"key": "p",
+									"value": "0"
+								},
+								{
+									"key": "s",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "Refresh Cache",
@@ -343,15 +400,12 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/api/v1/quotes/refresh",
+					"raw": "{{endpoint}}/{{quotes}}/refresh",
 					"host": [
-						"localhost"
+						"{{endpoint}}"
 					],
-					"port": "8080",
 					"path": [
-						"api",
-						"v1",
-						"quotes",
+						"{{quotes}}",
 						"refresh"
 					]
 				}
