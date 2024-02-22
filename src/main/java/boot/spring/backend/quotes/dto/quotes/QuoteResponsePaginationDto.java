@@ -1,4 +1,4 @@
-package boot.spring.backend.quotes.dto;
+package boot.spring.backend.quotes.dto.quotes;
 
 import java.io.Serializable;
 import java.util.List;

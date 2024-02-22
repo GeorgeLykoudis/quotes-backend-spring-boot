@@ -5,9 +5,11 @@ import boot.spring.backend.quotes.dto.auth.RegisterRequest;
 import boot.spring.backend.quotes.exception.UserAlreadyExistsException;
 import boot.spring.backend.quotes.jwt.JwtHelper;
 import boot.spring.backend.quotes.model.User;
+import boot.spring.backend.quotes.model.UserInfo;
 import boot.spring.backend.quotes.model.security.Role;
 import boot.spring.backend.quotes.security.UserDetailsService;
 import boot.spring.backend.quotes.service.token.TokenService;
+import boot.spring.backend.quotes.service.user.UserInfoService;
 import boot.spring.backend.quotes.service.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +29,7 @@ public class AuthService {
   private final JwtHelper jwtHelper;
   private final AuthenticationManager authenticationManager;
   private final UserService userService;
+  private final UserInfoService userInfoService;
   private final TokenService tokenService;
   private final PasswordEncoder passwordEncoder;
   private final UserDetailsService userDetailsService;
@@ -34,12 +37,14 @@ public class AuthService {
   public AuthService(JwtHelper jwtHelper,
                      AuthenticationManager authenticationManager,
                      UserService userService,
+                     UserInfoService userInfoService,
                      TokenService tokenService,
                      PasswordEncoder passwordEncoder,
                      UserDetailsService userDetailsService) {
     this.jwtHelper = jwtHelper;
     this.authenticationManager = authenticationManager;
     this.userService = userService;
+    this.userInfoService = userInfoService;
     this.tokenService = tokenService;
     this.passwordEncoder = passwordEncoder;
     this.userDetailsService = userDetailsService;
@@ -68,19 +73,30 @@ public class AuthService {
       throw new UserAlreadyExistsException("User already in use");
     }
 
-    User user = User.builder()
-            .email(request.getUsername())
-            .password(passwordEncoder.encode(request.getPassword()))
-            .role(Role.USER)
-            .build();
-
-    User savedUser = userService.save(user);
+    User savedUser = userService.save(createUser(request));
     String token = jwtHelper.generateToken(savedUser);
     String refreshToken = jwtHelper.generateRefreshToken(savedUser);
     tokenService.save(token, savedUser);
     return AuthenticationResponse.builder()
         .accessToken(token)
         .refreshToken(refreshToken)
+        .build();
+  }
+
+  @Transactional
+  public User createUser(RegisterRequest request) {
+    UserInfo userInfo = UserInfo.builder()
+        .firstName(request.getFirstName())
+        .lastName(request.getLastName())
+        .birthDate(request.getBirthDate())
+        .build();
+    UserInfo savedUserInfo = userInfoService.save(userInfo);
+
+    return User.builder()
+        .email(request.getUsername())
+        .password(passwordEncoder.encode(request.getPassword()))
+        .role(Role.USER)
+        .userInfo(savedUserInfo)
         .build();
   }
 

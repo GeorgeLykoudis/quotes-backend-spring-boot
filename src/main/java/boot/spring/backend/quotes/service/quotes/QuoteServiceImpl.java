@@ -1,8 +1,8 @@
 package boot.spring.backend.quotes.service.quotes;
 
-import boot.spring.backend.quotes.dto.QuoteRequestDto;
-import boot.spring.backend.quotes.dto.QuoteResponseDto;
-import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
+import boot.spring.backend.quotes.dto.quotes.QuoteRequestDto;
+import boot.spring.backend.quotes.dto.quotes.QuoteResponseDto;
+import boot.spring.backend.quotes.dto.quotes.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.model.Quote;

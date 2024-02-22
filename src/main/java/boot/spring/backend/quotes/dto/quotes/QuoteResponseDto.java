@@ -1,4 +1,4 @@
-package boot.spring.backend.quotes.dto;
+package boot.spring.backend.quotes.dto.quotes;
 
 /**
  * @author George Lykoudis

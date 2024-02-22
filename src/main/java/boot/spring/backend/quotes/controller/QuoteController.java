@@ -1,8 +1,8 @@
 package boot.spring.backend.quotes.controller;
 
-import boot.spring.backend.quotes.dto.QuoteRequestDto;
-import boot.spring.backend.quotes.dto.QuoteResponseDto;
-import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
+import boot.spring.backend.quotes.dto.quotes.QuoteRequestDto;
+import boot.spring.backend.quotes.dto.quotes.QuoteResponseDto;
+import boot.spring.backend.quotes.dto.quotes.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.service.cache.CacheService;
 import boot.spring.backend.quotes.service.quotes.QuoteService;
 import jakarta.validation.Valid;

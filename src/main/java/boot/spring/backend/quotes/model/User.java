@@ -3,14 +3,14 @@ package boot.spring.backend.quotes.model;
 import boot.spring.backend.quotes.model.security.Role;
 import boot.spring.backend.quotes.model.security.Token;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +32,9 @@ public class User extends BaseEntity implements UserDetails {
   private Role role;
   @OneToMany(mappedBy = "user")
   private List<Token> tokens;
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "user_info_id", referencedColumnName = "id")
+  private UserInfo userInfo;
 
   public User() { super(); }
 
@@ -145,6 +148,11 @@ public class User extends BaseEntity implements UserDetails {
 
     public UserBuilder tokens(List<Token> tokens) {
       this.instance.tokens = tokens;
+      return this;
+    }
+
+    public UserBuilder userInfo(UserInfo userInfo) {
+      this.instance.userInfo = userInfo;
       return this;
     }
 

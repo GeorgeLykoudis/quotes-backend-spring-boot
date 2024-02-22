@@ -1,8 +1,16 @@
 package boot.spring.backend.quotes.dto.auth;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDate;
+
 public class RegisterRequest {
     private String username;
     private String password;
+    private String firstName;
+    private String lastName;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate birthDate;
 
     public RegisterRequest() {}
 
@@ -27,6 +35,30 @@ public class RegisterRequest {
         this.password = password;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public static RegisterRequestBuilder builder() {
         return new RegisterRequestBuilder();
     }
@@ -41,6 +73,21 @@ public class RegisterRequest {
 
         public RegisterRequestBuilder password(String password) {
             this.instance.password = password;
+            return this;
+        }
+
+        public RegisterRequestBuilder firstName(String firstName) {
+            this.instance.firstName = firstName;
+            return this;
+        }
+
+        public RegisterRequestBuilder lastName(String lastName) {
+            this.instance.lastName = lastName;
+            return this;
+        }
+
+        public RegisterRequestBuilder birthDate(LocalDate birthDate) {
+            this.instance.birthDate = birthDate;
             return this;
         }
 

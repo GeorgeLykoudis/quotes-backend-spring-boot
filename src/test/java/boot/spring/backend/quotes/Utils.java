@@ -1,6 +1,6 @@
 package boot.spring.backend.quotes;
 
-import boot.spring.backend.quotes.dto.QuoteResponseDto;
+import boot.spring.backend.quotes.dto.quotes.QuoteResponseDto;
 import boot.spring.backend.quotes.model.Quote;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

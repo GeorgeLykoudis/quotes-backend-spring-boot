@@ -1,6 +1,6 @@
 package boot.spring.backend.quotes.controller;
 
-import boot.spring.backend.quotes.dto.QuoteErrorResponseDto;
+import boot.spring.backend.quotes.dto.quotes.QuoteErrorResponseDto;
 import boot.spring.backend.quotes.exception.ErrorConstants;
 import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteInternalException;
