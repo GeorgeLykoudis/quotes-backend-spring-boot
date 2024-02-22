@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "quote")
-public class QuoteEntity {
+public class Quote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class QuoteEntity {
     private String author;
     private String text;
 
-    public QuoteEntity() {}
+    public Quote() {}
 
     public Long getId() {
         return id;
@@ -49,9 +49,9 @@ public class QuoteEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof QuoteEntity)) return false;
+        if (!(o instanceof Quote)) return false;
 
-        QuoteEntity that = (QuoteEntity) o;
+        Quote that = (Quote) o;
 
         return getId() != null ? getId().equals(that.getId()) : that.getId() == null;
     }
@@ -61,28 +61,28 @@ public class QuoteEntity {
         return getId() != null ? getId().hashCode() : 0;
     }
 
-    public static QuoteEntityBuilder builder() {
-        return new QuoteEntityBuilder();
+    public static QuoteBuilder builder() {
+        return new QuoteBuilder();
     }
 
-    public static class QuoteEntityBuilder {
-        private final QuoteEntity instance = new QuoteEntity();
+    public static class QuoteBuilder {
+        private final Quote instance = new Quote();
 
-        public QuoteEntity build() {
+        public Quote build() {
             return this.instance;
         }
 
-        public QuoteEntityBuilder id(Long id) {
+        public QuoteBuilder id(Long id) {
             this.instance.id = id;
             return this;
         }
 
-        public QuoteEntityBuilder author(String author) {
+        public QuoteBuilder author(String author) {
             instance.author = author;
             return this;
         }
 
-        public QuoteEntityBuilder text(String text) {
+        public QuoteBuilder text(String text) {
             this.instance.text = text;
             return this;
         }

@@ -5,7 +5,7 @@ import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
-import boot.spring.backend.quotes.model.QuoteEntity;
+import boot.spring.backend.quotes.model.Quote;
 import boot.spring.backend.quotes.repository.QuoteRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class QuoteServiceImpl implements QuoteService {
     @Cacheable(key = "#id")
     public QuoteResponseDto findQuoteById(Long id) throws QuoteNotFoundException {
         LOG.info("Find quote by id {}", id);
-        QuoteEntity quote = quoteRepository.findById(id).orElseThrow(QuoteNotFoundException::new);
+        Quote quote = quoteRepository.findById(id).orElseThrow(QuoteNotFoundException::new);
         return modelMapper.map(quote, QuoteResponseDto.class);
     }
 
@@ -55,8 +55,8 @@ public class QuoteServiceImpl implements QuoteService {
             throw new QuoteAlreadyExistException();
         }
 
-        QuoteEntity quoteToBeSaved = modelMapper.map(request, QuoteEntity.class);
-        QuoteEntity savedQuote = quoteRepository.save(quoteToBeSaved);
+        Quote quoteToBeSaved = modelMapper.map(request, Quote.class);
+        Quote savedQuote = quoteRepository.save(quoteToBeSaved);
         LOG.info("Saved new quote with id {}", savedQuote.getId());
         return modelMapper.map(savedQuote, QuoteResponseDto.class);
     }
@@ -69,8 +69,8 @@ public class QuoteServiceImpl implements QuoteService {
             throw new QuoteNotFoundException();
         }
         LOG.info("Update quote with id {}", request.getId());
-        QuoteEntity quote = modelMapper.map(request, QuoteEntity.class);
-        QuoteEntity savedQuote = quoteRepository.save(quote);
+        Quote quote = modelMapper.map(request, Quote.class);
+        Quote savedQuote = quoteRepository.save(quote);
         return modelMapper.map(savedQuote, QuoteResponseDto.class);
     }
 
@@ -86,7 +86,7 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public List<QuoteResponseDto> findAll() {
-        List<QuoteEntity> quotes = quoteRepository.findAll();
+        List<Quote> quotes = quoteRepository.findAll();
         return convertToQuoteResponseDtos(quotes);
     }
 
@@ -94,11 +94,11 @@ public class QuoteServiceImpl implements QuoteService {
     @Cacheable(key = "{#page, #pageSize}")
     public QuoteResponsePaginationDto findAll(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<QuoteEntity> quotePage = quoteRepository.findAll(pageable);
+        Page<Quote> quotePage = quoteRepository.findAll(pageable);
         return createPaginationResponse(quotePage);
     }
 
-    private List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
+    private List<QuoteResponseDto> convertToQuoteResponseDtos(List<Quote> quotes) {
         return quotes.stream()
                 .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
                 .toList();
@@ -106,30 +106,30 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public QuoteResponseDto findRandomQuote() {
-        QuoteEntity quote = quoteRepository.findRandomQuote();
+        Quote quote = quoteRepository.findRandomQuote();
         return modelMapper.map(quote, QuoteResponseDto.class);
     }
 
     @Override
     public List<QuoteResponseDto> findQuotesHavingText(String text) {
-        List<QuoteEntity> quotes = quoteRepository.findByTextContaining(text);
+        List<Quote> quotes = quoteRepository.findByTextContaining(text);
         return convertToQuoteResponseDtos(quotes);
     }
 
     @Override
     public QuoteResponsePaginationDto findQuotesHavingText(String text, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<QuoteEntity> quotes = quoteRepository.findByTextContaining(text, pageable);
+        Page<Quote> quotes = quoteRepository.findByTextContaining(text, pageable);
         return createPaginationResponse(quotes);
     }
 
-    private QuoteResponsePaginationDto createPaginationResponse(Page<QuoteEntity> quotes) {
+    private QuoteResponsePaginationDto createPaginationResponse(Page<Quote> quotes) {
         QuoteResponsePaginationDto response = new QuoteResponsePaginationDto();
         Pageable pageable = quotes.getPageable();
         response.setPage(pageable.getPageNumber());
         response.setPageSize(pageable.getPageSize());
         response.setTotalQuotes(quotes.getTotalElements());
-        List<QuoteEntity> content = quotes.getContent();
+        List<Quote> content = quotes.getContent();
         response.setQuotes(convertToQuoteResponseDtos(content));
         return response;
     }

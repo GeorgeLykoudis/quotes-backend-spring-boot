@@ -1,7 +1,7 @@
 package boot.spring.backend.quotes.service.token;
 
-import boot.spring.backend.quotes.model.UserEntity;
-import boot.spring.backend.quotes.model.security.TokenEntity;
+import boot.spring.backend.quotes.model.User;
+import boot.spring.backend.quotes.model.security.Token;
 import boot.spring.backend.quotes.repository.TokenRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +17,13 @@ public class TokenService {
     this.tokenRepository = tokenRepository;
   }
 
-  public TokenEntity save(TokenEntity tokenEntity) {
-    return tokenRepository.save(tokenEntity);
+  public Token save(Token token) {
+    return tokenRepository.save(token);
   }
 
-  public TokenEntity save(String token, UserEntity user) {
-    TokenEntity tokenEntity = TokenEntity.builder()
-        .userEntity(user)
+  public Token save(String token, User user) {
+    Token tokenEntity = Token.builder()
+        .user(user)
         .token(token)
         .expired(false)
         .revoked(false)
@@ -31,15 +31,15 @@ public class TokenService {
     return tokenRepository.save(tokenEntity);
   }
 
-  public List<TokenEntity> findValidTokensByUser(Long id) {
+  public List<Token> findValidTokensByUser(Long id) {
     return tokenRepository.findAllValidTokensByUser(id);
   }
 
-  public Optional<TokenEntity> findByToken(String token) {
+  public Optional<Token> findByToken(String token) {
     return tokenRepository.findByToken(token);
   }
 
-  public void revokeAllUserTokens(UserEntity user) {
+  public void revokeAllUserTokens(User user) {
     var validUserTokens = findValidTokensByUser(user.getId());
     if (validUserTokens.isEmpty()) {
       return;

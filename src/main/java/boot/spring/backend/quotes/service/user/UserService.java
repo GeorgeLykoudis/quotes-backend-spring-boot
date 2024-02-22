@@ -1,6 +1,6 @@
 package boot.spring.backend.quotes.service.user;
 
-import boot.spring.backend.quotes.model.UserEntity;
+import boot.spring.backend.quotes.model.User;
 import boot.spring.backend.quotes.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
-  public Optional<UserEntity> findByEmail(String email) {
+  public Optional<User> findByEmail(String email) {
     return userRepository.findByEmail(email);
   }
 
@@ -23,7 +23,7 @@ public class UserService {
     return userRepository.existsByEmail(email);
   }
 
-  public UserEntity save(UserEntity userEntity) {
-    return userRepository.save(userEntity);
+  public User save(User user) {
+    return userRepository.save(user);
   }
 }

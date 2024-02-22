@@ -1,6 +1,6 @@
 package boot.spring.backend.quotes.jwt;
 
-import boot.spring.backend.quotes.model.UserEntity;
+import boot.spring.backend.quotes.model.User;
 import boot.spring.backend.quotes.security.UserDetailsService;
 import boot.spring.backend.quotes.service.auth.AuthServiceUtils;
 import boot.spring.backend.quotes.service.token.TokenService;
@@ -46,13 +46,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String token = tokenOptional.get();
     String username = jwtHelper.extractUserName(token);
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      UserEntity userEntity = userDetailsService.loadUserByUsername(username);
+      User user = userDetailsService.loadUserByUsername(username);
       boolean isTokenValid = tokenService.findByToken(token)
           .map(t -> !t.isExpired() && !t.isRevoked())
           .orElse(false);
-      if (jwtHelper.isTokenValid(token, userEntity) && isTokenValid) {
+      if (jwtHelper.isTokenValid(token, user) && isTokenValid) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-            userEntity, null, userEntity.getAuthorities()
+            user, null, user.getAuthorities()
         );
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

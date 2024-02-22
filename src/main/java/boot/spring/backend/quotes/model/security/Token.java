@@ -1,6 +1,6 @@
 package boot.spring.backend.quotes.model.security;
 
-import boot.spring.backend.quotes.model.UserEntity;
+import boot.spring.backend.quotes.model.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "token")
-public class TokenEntity {
+public class Token {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,20 +26,20 @@ public class TokenEntity {
   private boolean expired;
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
-  private UserEntity userEntity;
+  private User user;
 
-  public TokenEntity() {}
+  public Token() {}
 
-  public TokenEntity(String token,
-                     TokenType tokenType,
-                     boolean revoked,
-                     boolean expired,
-                     UserEntity userEntity) {
+  public Token(String token,
+               TokenType tokenType,
+               boolean revoked,
+               boolean expired,
+               User user) {
     this.token = token;
     this.tokenType = tokenType;
     this.revoked = revoked;
     this.expired = expired;
-    this.userEntity = userEntity;
+    this.user = user;
   }
 
   public Long getId() {
@@ -82,47 +82,47 @@ public class TokenEntity {
     this.expired = expired;
   }
 
-  public UserEntity getUserEntity() {
-    return userEntity;
+  public User getUser() {
+    return user;
   }
 
-  public void setUserEntity(UserEntity userEntity) {
-    this.userEntity = userEntity;
+  public void setUser(User user) {
+    this.user = user;
   }
 
-  public static TokenEntityBuilder builder() {
-    return new TokenEntityBuilder();
+  public static TokenBuilder builder() {
+    return new TokenBuilder();
   }
 
-  public static class TokenEntityBuilder {
-    private final TokenEntity instance = new TokenEntity();
+  public static class TokenBuilder {
+    private final Token instance = new Token();
 
-    public TokenEntityBuilder id(Long id) {
+    public TokenBuilder id(Long id) {
       this.instance.id = id;
       return this;
     }
 
-    public TokenEntityBuilder token(String token) {
+    public TokenBuilder token(String token) {
       this.instance.token = token;
       return this;
     }
 
-    public TokenEntityBuilder revoked(boolean revoked) {
+    public TokenBuilder revoked(boolean revoked) {
       this.instance.revoked = revoked;
       return this;
     }
 
-    public TokenEntityBuilder expired(boolean expired) {
+    public TokenBuilder expired(boolean expired) {
       this.instance.expired = expired;
       return this;
     }
 
-    public TokenEntityBuilder userEntity(UserEntity userEntity) {
-      this.instance.userEntity = userEntity;
+    public TokenBuilder user(User user) {
+      this.instance.user = user;
       return this;
     }
 
-    public TokenEntity build() {
+    public Token build() {
       return this.instance;
     }
   }

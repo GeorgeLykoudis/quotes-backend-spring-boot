@@ -5,7 +5,7 @@ import boot.spring.backend.quotes.dto.QuoteRequestDto;
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
-import boot.spring.backend.quotes.model.QuoteEntity;
+import boot.spring.backend.quotes.model.Quote;
 import boot.spring.backend.quotes.repository.QuoteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +51,7 @@ class QuoteServiceImplTest {
         long id = 1L;
         String text = "text";
         String author = "author";
-        QuoteEntity savedQuote = QuoteEntity.builder()
+        Quote savedQuote = Quote.builder()
             .id(id)
             .author(author)
             .text(text)
@@ -62,10 +62,10 @@ class QuoteServiceImplTest {
             .text(text)
             .build();
 
-        when(quoteRepository.save(any(QuoteEntity.class))).thenReturn(savedQuote);
+        when(quoteRepository.save(any(Quote.class))).thenReturn(savedQuote);
         QuoteResponseDto result = quoteService.saveQuote(request);
 
-        verify(quoteRepository, times(1)).save(any(QuoteEntity.class));
+        verify(quoteRepository, times(1)).save(any(Quote.class));
         assertNotNull(result);
         assertEquals(id, result.getId());
         assertEquals(request.getAuthor(), result.getAuthor());
@@ -77,7 +77,7 @@ class QuoteServiceImplTest {
         Long id = 1L;
         String text = "text";
         String author = "author";
-        QuoteEntity searchedQuote = QuoteEntity.builder()
+        Quote searchedQuote = Quote.builder()
             .id(id)
             .author(author)
             .text(text)
@@ -120,19 +120,19 @@ class QuoteServiceImplTest {
             .text(text)
             .build();
 
-        QuoteEntity savedQuote = QuoteEntity.builder()
+        Quote savedQuote = Quote.builder()
             .id(id)
             .author(updatedAuthor)
             .text(updatedText)
             .build();
 
         when(quoteRepository.existsById(anyLong())).thenReturn(true);
-        when(quoteRepository.save(any(QuoteEntity.class))).thenReturn(savedQuote);
+        when(quoteRepository.save(any(Quote.class))).thenReturn(savedQuote);
 
         QuoteResponseDto result = quoteService.updateQuote(request);
 
         verify(quoteRepository, times(1)).existsById(anyLong());
-        verify(quoteRepository, times(1)).save(any(QuoteEntity.class));
+        verify(quoteRepository, times(1)).save(any(Quote.class));
         assertNotNull(result);
         assertEquals(id, result.getId());
         assertEquals(updatedText, result.getText());
@@ -179,7 +179,7 @@ class QuoteServiceImplTest {
 
     @Test
     void findAll_Success() {
-        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
+        List<Quote> searchedQuotes = Utils.createQuotesList();
         List<QuoteResponseDto> searchedQuoteResponseDtos = Utils.convertToQuoteResponseDtos(searchedQuotes);
 
         when(quoteRepository.findAll()).thenReturn(searchedQuotes);
@@ -216,12 +216,12 @@ class QuoteServiceImplTest {
 
     @Test
     void findAll_Paginated_Success() {
-        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
+        List<Quote> searchedQuotes = Utils.createQuotesList();
 
         int page = 0;
         int pageSize = searchedQuotes.size();
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<QuoteEntity> pageQuotes = new PageImpl<>(searchedQuotes, pageable, searchedQuotes.size());
+        Page<Quote> pageQuotes = new PageImpl<>(searchedQuotes, pageable, searchedQuotes.size());
 
         when(quoteRepository.findAll(any(Pageable.class))).thenReturn(pageQuotes);
 
@@ -245,8 +245,8 @@ class QuoteServiceImplTest {
 
     @Test
     void findRandomQuote_Success() {
-        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
-        QuoteEntity quote1 = searchedQuotes.get(0);
+        List<Quote> searchedQuotes = Utils.createQuotesList();
+        Quote quote1 = searchedQuotes.get(0);
 
         when(quoteRepository.findRandomQuote()).thenReturn(quote1);
 
@@ -262,7 +262,7 @@ class QuoteServiceImplTest {
 
     @Test
     void findQuoteDtosHavingText_Success() {
-        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
+        List<Quote> searchedQuotes = Utils.createQuotesList();
         List<QuoteResponseDto> searchedQuoteResponseDtos = Utils.convertToQuoteResponseDtos(searchedQuotes);
         String searchedString = "test";
 
@@ -289,13 +289,13 @@ class QuoteServiceImplTest {
 
     @Test
     void findQuoteDtosHavingText_Paginated_Success() {
-        List<QuoteEntity> searchedQuotes = Utils.createQuotesList();
+        List<Quote> searchedQuotes = Utils.createQuotesList();
         String searchedString = "test";
         int page = 0;
         int pageSize = searchedQuotes.size();
 
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<QuoteEntity> pageQuotes = new PageImpl<>(searchedQuotes, pageable, searchedQuotes.size());
+        Page<Quote> pageQuotes = new PageImpl<>(searchedQuotes, pageable, searchedQuotes.size());
         when(quoteRepository.findByTextContaining(anyString(), any(Pageable.class))).thenReturn(pageQuotes);
 
         QuoteResponsePaginationDto result = quoteService.findQuotesHavingText(searchedString, page, pageSize);

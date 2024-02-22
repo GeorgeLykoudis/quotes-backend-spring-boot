@@ -1,7 +1,7 @@
 package boot.spring.backend.quotes.model;
 
 import boot.spring.backend.quotes.model.security.Role;
-import boot.spring.backend.quotes.model.security.TokenEntity;
+import boot.spring.backend.quotes.model.security.Token;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class UserEntity implements UserDetails {
+public class User implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,8 @@ public class UserEntity implements UserDetails {
   @Enumerated(EnumType.STRING)
   @Column(name = "role")
   private Role role;
-  @OneToMany(mappedBy = "userEntity")
-  private List<TokenEntity> tokens;
+  @OneToMany(mappedBy = "user")
+  private List<Token> tokens;
   public Long getId() {
     return id;
   }
@@ -66,16 +66,16 @@ public class UserEntity implements UserDetails {
     this.role = role;
   }
 
-  public List<TokenEntity> getTokens() {
+  public List<Token> getTokens() {
     return tokens;
   }
 
-  public void setTokens(List<TokenEntity> tokens) {
+  public void setTokens(List<Token> tokens) {
     this.tokens = tokens;
   }
 
-  public static UserEntityBuilder builder() {
-    return new UserEntityBuilder();
+  public static UserBuilder builder() {
+    return new UserBuilder();
   }
 
   @Override
@@ -108,35 +108,35 @@ public class UserEntity implements UserDetails {
     return true;
   }
 
-  public static class UserEntityBuilder {
-    private final UserEntity instance = new UserEntity();
+  public static class UserBuilder {
+    private final User instance = new User();
 
-    public UserEntityBuilder id(Long id) {
+    public UserBuilder id(Long id) {
       this.instance.id = id;
       return this;
     }
 
-    public UserEntityBuilder email(String email) {
+    public UserBuilder email(String email) {
       this.instance.email = email;
       return this;
     }
 
-    public UserEntityBuilder password(String password) {
+    public UserBuilder password(String password) {
       this.instance.password = password;
       return this;
     }
 
-    public UserEntityBuilder role(Role role) {
+    public UserBuilder role(Role role) {
       this.instance.role = role;
       return this;
     }
 
-    public UserEntityBuilder tokens(List<TokenEntity> tokens) {
+    public UserBuilder tokens(List<Token> tokens) {
       this.instance.tokens = tokens;
       return this;
     }
 
-    public UserEntity build() {
+    public User build() {
       return this.instance;
     }
   }

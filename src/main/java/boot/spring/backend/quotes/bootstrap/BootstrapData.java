@@ -1,7 +1,7 @@
 package boot.spring.backend.quotes.bootstrap;
 
 import boot.spring.backend.quotes.jwt.JwtHelper;
-import boot.spring.backend.quotes.model.UserEntity;
+import boot.spring.backend.quotes.model.User;
 import boot.spring.backend.quotes.model.security.Role;
 import boot.spring.backend.quotes.service.token.TokenService;
 import boot.spring.backend.quotes.service.user.UserService;
@@ -36,13 +36,13 @@ public class BootstrapData implements CommandLineRunner {
         if (userService.existsByEmail(email)) {
             return;
         }
-        UserEntity userEntity = UserEntity.builder()
+        User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .role(Role.ADMIN)
                 .build();
 
-        UserEntity savedUser = userService.save(userEntity);
+        User savedUser = userService.save(user);
         String token = jwtHelper.generateToken(savedUser);
 
         tokenService.save(token, savedUser);

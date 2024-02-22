@@ -1,7 +1,7 @@
 package boot.spring.backend.quotes;
 
 import boot.spring.backend.quotes.dto.QuoteResponseDto;
-import boot.spring.backend.quotes.model.QuoteEntity;
+import boot.spring.backend.quotes.model.Quote;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
@@ -30,16 +30,16 @@ public class Utils {
         return objectMapper.writeValueAsString(content);
     }
 
-    public static List<QuoteEntity> createQuotesList() {
-        List<QuoteEntity> quotes = new ArrayList<>();
-        QuoteEntity q1 = QuoteEntity.builder()
+    public static List<Quote> createQuotesList() {
+        List<Quote> quotes = new ArrayList<>();
+        Quote q1 = Quote.builder()
             .id(1L)
             .text("text 1")
             .author("author 1")
             .build();
         quotes.add(q1);
 
-        QuoteEntity q2 = QuoteEntity.builder()
+        Quote q2 = Quote.builder()
             .id(2L)
             .text("text 2")
             .author("author 2")
@@ -55,7 +55,7 @@ public class Utils {
                 .toList();
     }
 
-    public static List<QuoteResponseDto> convertToQuoteResponseDtos(List<QuoteEntity> quotes) {
+    public static List<QuoteResponseDto> convertToQuoteResponseDtos(List<Quote> quotes) {
         return quotes.stream()
                 .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
                 .toList();

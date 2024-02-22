@@ -1,6 +1,6 @@
 package boot.spring.backend.quotes.jwt;
 
-import boot.spring.backend.quotes.model.UserEntity;
+import boot.spring.backend.quotes.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,15 +21,15 @@ public class JwtHelper {
     this.properties = properties;
   }
 
-  public String generateToken(UserEntity user) {
+  public String generateToken(User user) {
     return buildToken(user, properties.getExpiration());
   }
 
-  public String generateRefreshToken(UserEntity user) {
+  public String generateRefreshToken(User user) {
     return buildToken(user, properties.getRefreshTokenExpiration());
   }
 
-  private String buildToken(UserEntity user, long expiration) {
+  private String buildToken(User user, long expiration) {
     return Jwts
         .builder()
         .setSubject(user.getEmail())
@@ -45,9 +45,9 @@ public class JwtHelper {
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public boolean isTokenValid(String token, UserEntity userEntity) {
+  public boolean isTokenValid(String token, User user) {
     String username = extractUserName(token);
-    return username.equals(userEntity.getUsername()) &&
+    return username.equals(user.getUsername()) &&
         !isTokenExpired(token);
   }
 

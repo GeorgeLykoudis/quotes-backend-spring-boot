@@ -4,7 +4,7 @@ import boot.spring.backend.quotes.dto.auth.AuthenticationResponse;
 import boot.spring.backend.quotes.dto.auth.RegisterRequest;
 import boot.spring.backend.quotes.exception.UserAlreadyExistsException;
 import boot.spring.backend.quotes.jwt.JwtHelper;
-import boot.spring.backend.quotes.model.UserEntity;
+import boot.spring.backend.quotes.model.User;
 import boot.spring.backend.quotes.model.security.Role;
 import boot.spring.backend.quotes.security.UserDetailsService;
 import boot.spring.backend.quotes.service.token.TokenService;
@@ -51,11 +51,11 @@ public class AuthService {
         new UsernamePasswordAuthenticationToken(email, password)
     );
 
-    UserEntity userEntity = userService.findByEmail(email).orElseThrow();
-    String token = jwtHelper.generateToken(userEntity);
-    String refreshToken = jwtHelper.generateRefreshToken(userEntity);
-    tokenService.revokeAllUserTokens(userEntity);
-    tokenService.save(token, userEntity);
+    User user = userService.findByEmail(email).orElseThrow();
+    String token = jwtHelper.generateToken(user);
+    String refreshToken = jwtHelper.generateRefreshToken(user);
+    tokenService.revokeAllUserTokens(user);
+    tokenService.save(token, user);
     return AuthenticationResponse.builder()
         .accessToken(token)
         .refreshToken(refreshToken)
@@ -68,13 +68,13 @@ public class AuthService {
       throw new UserAlreadyExistsException("User already in use");
     }
 
-    UserEntity userEntity = UserEntity.builder()
+    User user = User.builder()
             .email(request.getUsername())
             .password(passwordEncoder.encode(request.getPassword()))
             .role(Role.USER)
             .build();
 
-    UserEntity savedUser = userService.save(userEntity);
+    User savedUser = userService.save(user);
     String token = jwtHelper.generateToken(savedUser);
     String refreshToken = jwtHelper.generateRefreshToken(savedUser);
     tokenService.save(token, savedUser);
@@ -94,11 +94,11 @@ public class AuthService {
     String refreshToken = tokenOptional.get();
     String username = jwtHelper.extractUserName(refreshToken);
     if (username != null) {
-      UserEntity userEntity = userDetailsService.loadUserByUsername(username);
-      if (jwtHelper.isTokenValid(refreshToken, userEntity)) {
-        var accessToken = jwtHelper.generateToken(userEntity);
-        tokenService.revokeAllUserTokens(userEntity);
-        tokenService.save(accessToken, userEntity);
+      User user = userDetailsService.loadUserByUsername(username);
+      if (jwtHelper.isTokenValid(refreshToken, user)) {
+        var accessToken = jwtHelper.generateToken(user);
+        tokenService.revokeAllUserTokens(user);
+        tokenService.save(accessToken, user);
         var authResponse = AuthenticationResponse.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken)

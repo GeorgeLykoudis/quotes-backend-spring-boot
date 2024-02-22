@@ -1,13 +1,13 @@
 package boot.spring.backend.quotes.repository;
 
-import boot.spring.backend.quotes.model.security.TokenEntity;
+import boot.spring.backend.quotes.model.security.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
+public interface TokenRepository extends JpaRepository<Token, Long> {
 
   @Query(
       value = """
@@ -17,8 +17,8 @@ public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
       """,
       nativeQuery = true
   )
-  List<TokenEntity> findAllValidTokensByUser(Long userId);
+  List<Token> findAllValidTokensByUser(Long userId);
 
-  Optional<TokenEntity> findByToken(String token);
+  Optional<Token> findByToken(String token);
 
 }
