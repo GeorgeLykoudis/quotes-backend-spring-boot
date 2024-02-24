@@ -2,6 +2,9 @@ package boot.spring.backend.quotes;
 
 import boot.spring.backend.quotes.dto.quotes.QuoteResponseDto;
 import boot.spring.backend.quotes.model.Quote;
+import boot.spring.backend.quotes.model.User;
+import boot.spring.backend.quotes.model.UserInfo;
+import boot.spring.backend.quotes.model.security.Role;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
@@ -31,18 +34,31 @@ public class Utils {
     }
 
     public static List<Quote> createQuotesList() {
+        User user = User.builder()
+                .email("user@test.com")
+                .password("user1")
+                .userInfo(UserInfo.builder().id(1L).firstName("firstName").lastName("lastName").build())
+                .role(Role.USER)
+                .build();
+        User admin = User.builder()
+                .email("admin@test.com")
+                .password("user2")
+                .userInfo(UserInfo.builder().id(2L).firstName("firstName").lastName("lastName").build())
+                .role(Role.ADMIN)
+                .build();
+
         List<Quote> quotes = new ArrayList<>();
         Quote q1 = Quote.builder()
             .id(1L)
             .text("text 1")
-            .author("author 1")
+            .user(user)
             .build();
         quotes.add(q1);
 
         Quote q2 = Quote.builder()
             .id(2L)
             .text("text 2")
-            .author("author 2")
+            .user(admin)
             .build();
         quotes.add(q2);
 

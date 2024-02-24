@@ -6,6 +6,7 @@ import boot.spring.backend.quotes.dto.quotes.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.quotes.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.model.Quote;
+import boot.spring.backend.quotes.model.User;
 import boot.spring.backend.quotes.repository.QuoteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,15 +51,15 @@ class QuoteServiceImplTest {
     void saveQuote_Success() {
         long id = 1L;
         String text = "text";
-        String author = "author";
+        User user = User.builder().id(1L).email("email").build();
         Quote savedQuote = Quote.builder()
             .id(id)
-            .author(author)
+            .user(user)
             .text(text)
             .build();
 
         QuoteRequestDto request = QuoteRequestDto.builder()
-            .author(author)
+            .author(user.getUsername())
             .text(text)
             .build();
 
@@ -76,10 +77,10 @@ class QuoteServiceImplTest {
     void findQuoteById_Success() {
         Long id = 1L;
         String text = "text";
-        String author = "author";
+        User user = User.builder().id(1L).email("email").build();
         Quote searchedQuote = Quote.builder()
             .id(id)
-            .author(author)
+            .user(user)
             .text(text)
             .build();
 
@@ -91,7 +92,7 @@ class QuoteServiceImplTest {
         assertNotNull(result);
         assertEquals(id, result.getId());
         assertEquals(text, result.getText());
-        assertEquals(author, result.getAuthor());
+        assertEquals(user.getUsername(), result.getAuthor());
     }
 
     @Test
@@ -113,6 +114,7 @@ class QuoteServiceImplTest {
         String author = "author";
         String updatedText = "textUpdated";
         String updatedAuthor = "authorUpdated";
+        User user = User.builder().email("emailUpdated").build();
 
         QuoteRequestDto request = QuoteRequestDto.builder()
             .id(id)
@@ -122,7 +124,7 @@ class QuoteServiceImplTest {
 
         Quote savedQuote = Quote.builder()
             .id(id)
-            .author(updatedAuthor)
+            .user(user)
             .text(updatedText)
             .build();
 
@@ -257,7 +259,7 @@ class QuoteServiceImplTest {
         assertNotNull(result);
         assertEquals(quote1.getId(), result.getId());
         assertEquals(quote1.getText(), result.getText());
-        assertEquals(quote1.getAuthor(), result.getAuthor());
+        assertEquals(quote1.getUser().getUsername(), result.getAuthor());
     }
 
     @Test

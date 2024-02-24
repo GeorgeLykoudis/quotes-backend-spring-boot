@@ -1,9 +1,8 @@
 package boot.spring.backend.quotes.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
@@ -12,31 +11,14 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "quotes")
-public class Quote {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String author;
+public class Quote extends Audit {
     private String text;
 
-    public Quote() {}
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+    public Quote() { super(); }
 
     public String getText() {
         return text;
@@ -44,6 +26,14 @@ public class Quote {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -73,12 +63,12 @@ public class Quote {
         }
 
         public QuoteBuilder id(Long id) {
-            this.instance.id = id;
+            this.instance.setId(id);
             return this;
         }
 
-        public QuoteBuilder author(String author) {
-            instance.author = author;
+        public QuoteBuilder user(User user) {
+            instance.user = user;
             return this;
         }
 
