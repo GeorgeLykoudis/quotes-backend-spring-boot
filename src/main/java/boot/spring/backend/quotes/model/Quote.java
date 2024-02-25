@@ -1,9 +1,11 @@
 package boot.spring.backend.quotes.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.springframework.data.annotation.CreatedBy;
+
+import java.time.Instant;
 
 /**
  * @author George Lykoudis
@@ -14,9 +16,9 @@ import jakarta.persistence.Table;
 public class Quote extends Audit {
     private String text;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @CreatedBy
+    @Column(name = "created_by")
+    private String createdBy;
 
     public Quote() { super(); }
 
@@ -28,12 +30,12 @@ public class Quote extends Audit {
         this.text = text;
     }
 
-    public User getUser() {
-        return user;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     @Override
@@ -67,13 +69,23 @@ public class Quote extends Audit {
             return this;
         }
 
-        public QuoteBuilder user(User user) {
-            instance.user = user;
+        public QuoteBuilder text(String text) {
+            this.instance.text = text;
             return this;
         }
 
-        public QuoteBuilder text(String text) {
-            this.instance.text = text;
+        public QuoteBuilder createdAt(Instant date) {
+            this.instance.setCreatedAt(date);
+            return this;
+        }
+
+        public QuoteBuilder lastModifiedAt(Instant date) {
+            this.instance.setLastModifiedAt(date);
+            return this;
+        }
+
+        public QuoteBuilder createdBy(String createdBy) {
+            this.instance.createdBy = createdBy;
             return this;
         }
     }

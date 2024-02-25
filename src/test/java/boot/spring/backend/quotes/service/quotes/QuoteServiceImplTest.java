@@ -6,7 +6,6 @@ import boot.spring.backend.quotes.dto.quotes.QuoteResponseDto;
 import boot.spring.backend.quotes.dto.quotes.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.model.Quote;
-import boot.spring.backend.quotes.model.User;
 import boot.spring.backend.quotes.repository.QuoteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,15 +50,14 @@ class QuoteServiceImplTest {
     void saveQuote_Success() {
         long id = 1L;
         String text = "text";
-        User user = User.builder().id(1L).email("email").build();
+        String createdBy = "email@test.com";
         Quote savedQuote = Quote.builder()
             .id(id)
-            .user(user)
+            .createdBy(createdBy)
             .text(text)
             .build();
 
         QuoteRequestDto request = QuoteRequestDto.builder()
-            .author(user.getUsername())
             .text(text)
             .build();
 
@@ -69,7 +67,6 @@ class QuoteServiceImplTest {
         verify(quoteRepository, times(1)).save(any(Quote.class));
         assertNotNull(result);
         assertEquals(id, result.getId());
-        assertEquals(request.getAuthor(), result.getAuthor());
         assertEquals(request.getText(), result.getText());
     }
 
@@ -77,10 +74,10 @@ class QuoteServiceImplTest {
     void findQuoteById_Success() {
         Long id = 1L;
         String text = "text";
-        User user = User.builder().id(1L).email("email").build();
+        String createdBy = "email@test.com";
         Quote searchedQuote = Quote.builder()
             .id(id)
-            .user(user)
+            .createdBy(createdBy)
             .text(text)
             .build();
 
@@ -92,7 +89,6 @@ class QuoteServiceImplTest {
         assertNotNull(result);
         assertEquals(id, result.getId());
         assertEquals(text, result.getText());
-        assertEquals(user.getUsername(), result.getAuthor());
     }
 
     @Test
@@ -111,20 +107,18 @@ class QuoteServiceImplTest {
     void updateQuoteById_Success() {
         long id = 1L;
         String text = "text";
-        String author = "author";
         String updatedText = "textUpdated";
         String updatedAuthor = "authorUpdated";
-        User user = User.builder().email("emailUpdated").build();
+        String createdBy = "emailUpdated@test.com";
 
         QuoteRequestDto request = QuoteRequestDto.builder()
             .id(id)
-            .author(author)
             .text(text)
             .build();
 
         Quote savedQuote = Quote.builder()
             .id(id)
-            .user(user)
+            .createdBy(createdBy)
             .text(updatedText)
             .build();
 
@@ -137,8 +131,7 @@ class QuoteServiceImplTest {
         verify(quoteRepository, times(1)).save(any(Quote.class));
         assertNotNull(result);
         assertEquals(id, result.getId());
-        assertEquals(updatedText, result.getText());
-        assertEquals(updatedAuthor, result.getAuthor());
+        assertEquals(updatedText, result.getText());;
     }
 
     @Test
@@ -196,13 +189,11 @@ class QuoteServiceImplTest {
         QuoteResponseDto r1 = result.get(0);
         assertEquals(q1.getId(), r1.getId());
         assertEquals(q1.getText(), r1.getText());
-        assertEquals(q1.getAuthor(), r1.getAuthor());
 
         QuoteResponseDto q2 = searchedQuoteResponseDtos.get(1);
         QuoteResponseDto r2 = result.get(1);
         assertEquals(q2.getId(), r2.getId());
         assertEquals(q2.getText(), r2.getText());
-        assertEquals(q2.getAuthor(), r2.getAuthor());
     }
 
     @Test
@@ -259,7 +250,6 @@ class QuoteServiceImplTest {
         assertNotNull(result);
         assertEquals(quote1.getId(), result.getId());
         assertEquals(quote1.getText(), result.getText());
-        assertEquals(quote1.getUser().getUsername(), result.getAuthor());
     }
 
     @Test
@@ -280,13 +270,11 @@ class QuoteServiceImplTest {
         QuoteResponseDto r1 = result.get(0);
         assertEquals(q1.getId(), r1.getId());
         assertEquals(q1.getText(), r1.getText());
-        assertEquals(q1.getAuthor(), r1.getAuthor());
 
         QuoteResponseDto q2 = searchedQuoteResponseDtos.get(1);
         QuoteResponseDto r2 = result.get(1);
         assertEquals(q2.getId(), r2.getId());
         assertEquals(q2.getText(), r2.getText());
-        assertEquals(q2.getAuthor(), r2.getAuthor());
     }
 
     @Test

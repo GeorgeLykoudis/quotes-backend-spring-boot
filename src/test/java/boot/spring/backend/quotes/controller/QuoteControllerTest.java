@@ -67,15 +67,12 @@ class QuoteControllerTest {
     void createQuote_ValidRequest_Success() throws Exception {
         long id = 1L;
         String text = "text";
-        String author = "author";
         QuoteRequestDto request = QuoteRequestDto.builder()
-            .author(author)
             .text(text)
             .build();
 
         QuoteResponseDto quoteResponseDto = QuoteResponseDto.builder()
             .id(id)
-            .author(author)
             .text(text)
             .build();
 
@@ -86,14 +83,12 @@ class QuoteControllerTest {
                         .content(Utils.toJson(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.text").value(text))
-                .andExpect(jsonPath("$.author").value(author));
+                .andExpect(jsonPath("$.text").value(text));
     }
 
     @Test
     void createQuote_NotValidRequest_EmptyTextField_ThrowsMethodArgumentNotValidException() throws Exception {
         QuoteRequestDto request = QuoteRequestDto.builder()
-            .author("author")
             .text("")
             .build();
 
@@ -107,9 +102,7 @@ class QuoteControllerTest {
 
     @Test
     void createQuote_NotValidRequest_NullTextField_ThrowsMethodArgumentNotValidException() throws Exception {
-        QuoteRequestDto request = QuoteRequestDto.builder()
-            .author("author")
-            .build();
+        QuoteRequestDto request = QuoteRequestDto.builder().build();
 
         mvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -124,11 +117,9 @@ class QuoteControllerTest {
     void getQuoteById_ValidRequest_Success() throws Exception {
         long id = 1L;
         String text = "text";
-        String author = "author";
 
         QuoteResponseDto quoteResponseDto = QuoteResponseDto.builder()
             .id(id)
-            .author(author)
             .text(text)
             .build();
 
@@ -137,8 +128,7 @@ class QuoteControllerTest {
         mvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.text").value(text))
-                .andExpect(jsonPath("$.author").value(author));
+                .andExpect(jsonPath("$.text").value(text));
     }
 
     @Test
@@ -169,18 +159,15 @@ class QuoteControllerTest {
     void updateQuote_ValidRequest_Success() throws Exception {
         long id = 1L;
         String text = "text";
-        String author = "author";
 
         QuoteRequestDto request = QuoteRequestDto.builder()
             .id(id)
-            .author(author)
             .text(text)
             .build();
 
         String updatedText = "text2";
         QuoteResponseDto quoteResponseDto = QuoteResponseDto.builder()
             .id(id)
-            .author(author)
             .text(updatedText)
             .build();
 
@@ -191,19 +178,16 @@ class QuoteControllerTest {
                 .content(Utils.toJson(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.text").value(updatedText))
-                .andExpect(jsonPath("$.author").value(author));
+                .andExpect(jsonPath("$.text").value(updatedText));
     }
 
     @Test
     void updateQuoteById_ValidRequest_NonExistentQuote_ThrowsQuoteNotFoundException() throws Exception {
         long id = 1L;
         String text = "text";
-        String author = "author";
 
         QuoteRequestDto request = QuoteRequestDto.builder()
             .id(id)
-            .author(author)
             .text(text)
             .build();
 
@@ -268,7 +252,6 @@ class QuoteControllerTest {
 
         QuoteResponseDto quote = QuoteResponseDto.builder()
             .id(id)
-            .author(author)
             .text(text)
             .build();
 
@@ -277,8 +260,7 @@ class QuoteControllerTest {
         mvc.perform(get(BASE_URL + "/random"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.text").value(text))
-                .andExpect(jsonPath("$.author").value(author));
+                .andExpect(jsonPath("$.text").value(text));
     }
 
     @Test

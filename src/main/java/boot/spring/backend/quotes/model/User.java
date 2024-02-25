@@ -37,29 +37,24 @@ public class User extends BaseEntity implements UserDetails {
   @JoinColumn(name = "user_info_id", referencedColumnName = "id")
   private UserInfo userInfo;
 
-  @OneToMany(mappedBy = "user")
-  private List<Quote> quotes;
-
   public User() { super(); }
 
   public User(Long id) { super(id); }
 
-  public User(String email, String password, Role role, List<Token> tokens, List<Quote> quotes) {
+  public User(String email, String password, Role role, List<Token> tokens) {
     super();
     this.email = email;
     this.password = password;
     this.role = role;
     this.tokens = tokens;
-    this.quotes = quotes;
   }
 
-  public User(Long id, String email, String password, Role role, List<Token> tokens, List<Quote> quotes) {
+  public User(Long id, String email, String password, Role role, List<Token> tokens) {
     super(id);
     this.email = email;
     this.password = password;
     this.role = role;
     this.tokens = tokens;
-    this.quotes = quotes;
   }
 
   public String getEmail() {
@@ -101,14 +96,6 @@ public class User extends BaseEntity implements UserDetails {
 
   public void setUserInfo(UserInfo userInfo) {
     this.userInfo = userInfo;
-  }
-
-  public List<Quote> getQuotes() {
-    return quotes;
-  }
-
-  public void setQuotes(List<Quote> quotes) {
-    this.quotes = quotes;
   }
 
   public static UserBuilder builder() {
@@ -175,11 +162,6 @@ public class User extends BaseEntity implements UserDetails {
 
     public UserBuilder userInfo(UserInfo userInfo) {
       this.instance.userInfo = userInfo;
-      return this;
-    }
-
-    public UserBuilder quotes(List<Quote> quotes) {
-      this.instance.quotes = new ArrayList<>(quotes);
       return this;
     }
 

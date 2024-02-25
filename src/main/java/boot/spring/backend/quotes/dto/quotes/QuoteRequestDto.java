@@ -10,7 +10,6 @@ import jakarta.validation.constraints.NotNull;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class QuoteRequestDto extends QuoteBaseDto {
-    private String author;
 
     @NotNull(message = "Text cannot be null")
     @NotBlank(message = "Text cannot be empty")
@@ -26,14 +25,6 @@ public class QuoteRequestDto extends QuoteBaseDto {
 
     public static QuoteRequestDtoBuilder builder() {
         return new QuoteRequestDtoBuilder();
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public String getText() {
@@ -55,11 +46,6 @@ public class QuoteRequestDto extends QuoteBaseDto {
 
         public QuoteRequestDtoBuilder id(Long id) {
             instance.setId(id);
-            return this;
-        }
-
-        public QuoteRequestDtoBuilder author(String author) {
-            instance.author = author;
             return this;
         }
 
