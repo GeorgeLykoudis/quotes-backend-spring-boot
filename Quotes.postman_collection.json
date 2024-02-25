@@ -71,7 +71,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\" : \"test1@gmail.com\",\n    \"password\": \"test1\"\n}",
+							"raw": "{\n    \"username\" : \"test3@gmail.com\",\n    \"password\": \"test\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -214,7 +214,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJpYXQiOjE3MDg1OTI3NDQsImV4cCI6MTcwODU5MjgwNCwiYSI6IlVTRVIifQ.fKQ2Ii9IyfEWyswSxIEnduAs0GwrcXtznMQPtW5aJ6M",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MkBnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODc3MTUsImV4cCI6MTcwODg4Nzc3NSwiYSI6IlVTRVIifQ.w90-yVEygHzUTdu6nYc-qq-5eQpdEJmqU67GcpyUsZw",
 									"type": "string"
 								}
 							]
@@ -222,13 +222,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{endpoint}}/{{quotes}}/1",
+							"raw": "{{endpoint}}/{{quotes}}/6",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
 								"{{quotes}}",
-								"1"
+								"6"
 							]
 						}
 					},
@@ -237,11 +237,21 @@
 				{
 					"name": "Create Quote",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0M0BnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODgwODUsImV4cCI6MTcwODg4ODE0NSwiYSI6IlVTRVIifQ.rsrPITqnX-PA3HpFk6BWlRnNIozut-puFpDdK2tPHSo",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"author\" : \"test author\",\r\n    \"text\" : \"test text\"\r\n}",
+							"raw": "{\r\n    \"text\" : \"test text 1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -249,13 +259,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{endpoint}}/{{quotes}}/quotes",
+							"raw": "{{endpoint}}/{{quotes}}",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
-								"{{quotes}}",
-								"quotes"
+								"{{quotes}}"
 							]
 						}
 					},
@@ -264,11 +273,21 @@
 				{
 					"name": "Update Quote By Id",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0M0BnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODgwODUsImV4cCI6MTcwODg4ODE0NSwiYSI6IlVTRVIifQ.rsrPITqnX-PA3HpFk6BWlRnNIozut-puFpDdK2tPHSo",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"author\" : \"test author update 2\",\r\n    \"text\" : \"test text update 2\"\r\n}",
+							"raw": "{\r\n    \"id\": 7,\r\n    \"text\" : \"test text update 2\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -276,12 +295,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{endpoint}}/{{quotes}}quotes",
+							"raw": "{{endpoint}}/{{quotes}}",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
-								"{{quotes}}quotes"
+								"{{quotes}}"
 							]
 						}
 					},
@@ -290,16 +309,26 @@
 				{
 					"name": "Delete Quote By Id",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0M0BnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODgwODUsImV4cCI6MTcwODg4ODE0NSwiYSI6IlVTRVIifQ.rsrPITqnX-PA3HpFk6BWlRnNIozut-puFpDdK2tPHSo",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{endpoint}}/{{quotes}}/1",
+							"raw": "{{endpoint}}/{{quotes}}/7",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
 								"{{quotes}}",
-								"1"
+								"7"
 							]
 						}
 					},
@@ -309,7 +338,14 @@
 					"name": "Get All Quotes",
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0M0BnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODgxNTksImV4cCI6MTcwODg4ODIxOSwiYSI6IlVTRVIifQ.zgx_2txLgn-NJ6xffOoYOWT97qT3hg7wAgdok_B26JI",
+									"type": "string"
+								}
+							]
 						},
 						"method": "GET",
 						"header": [],
@@ -328,6 +364,16 @@
 				{
 					"name": "Get All Quotes With Pagination",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0M0BnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODgyNTYsImV4cCI6MTcwODg4ODMxNiwiYSI6IlVTRVIifQ.j8OuqtRBfye3cwGHxEKB6x5J2PXKSF_YNCrdF-2OwT8",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -356,6 +402,16 @@
 				{
 					"name": "Get Random Quote",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0M0BnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODgzMDgsImV4cCI6MTcwODg4ODM2OCwiYSI6IlVTRVIifQ.6ctMiuEfcHdsUAyL3mQMF9OuXaweQYBK2X5FafjziI8",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -374,6 +430,16 @@
 				{
 					"name": "Get Quotes Containing Text",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0M0BnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODgzMDgsImV4cCI6MTcwODg4ODM2OCwiYSI6IlVTRVIifQ.6ctMiuEfcHdsUAyL3mQMF9OuXaweQYBK2X5FafjziI8",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -398,6 +464,16 @@
 				{
 					"name": "Get Quotes Containing Text With Pagination",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0M0BnbWFpbC5jb20iLCJpYXQiOjE3MDg4ODgzMDgsImV4cCI6MTcwODg4ODM2OCwiYSI6IlVTRVIifQ.6ctMiuEfcHdsUAyL3mQMF9OuXaweQYBK2X5FafjziI8",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
