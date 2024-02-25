@@ -30,6 +30,19 @@ public class SecurityConfiguration {
   private final CustomAccessDeniedHandler accessDeniedHandler;
   private final LogoutHandler logoutHandler;
 
+  private static final String[] WHITE_LIST_URL = {
+          "/auth/**",
+          "/v2/api-docs",
+          "/v3/api-docs",
+          "/v3/api-docs/**",
+          "/swagger-resources",
+          "/swagger-resources/**",
+          "/configuration/security",
+          "/swagger-ui/**",
+          "/webjars/**",
+          "/swagger-ui.html"
+  };
+
   public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter,
                                UserDetailsService userDetailsService,
                                CustomAccessDeniedHandler accessDeniedHandler,
@@ -48,7 +61,7 @@ public class SecurityConfiguration {
         .formLogin(FormLoginConfigurer::disable)
         .httpBasic(HttpBasicConfigurer::disable)
         .authorizeHttpRequests(registry -> registry
-            .requestMatchers("auth/**").permitAll()
+            .requestMatchers(WHITE_LIST_URL).permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)

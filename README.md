@@ -4,18 +4,13 @@ In Quote Application, the operations that are available are create, update,
 retrieve and delete quotes. Additionally, random quotes can be retrieved, all 
 quotes using pagination and search for quotes containing specific text.
 
-## Base URL
-The base URL for all endpoints is `http://localhost:8080`.  
-
-## API Endpoints
-The prefix for all endpoints is `/api/v1/quotes`.
-
 ## General Information
-It is implemented using Java 11 and Spring Boot, MySql as the database and
-the entire application can be executed in a docker environment using the 
+The project is implemented using Java 17, Spring Boot and Spring Security. 
+Databases that have been used are MySql for storing and Redis for caching.
+The application can be executed in a docker environment using the 
 **docker-compose.yml** file.
 
-### Execution commands
+## Execution commands
 
 Simply execute `docker-compose up --build`.
 
@@ -41,9 +36,14 @@ Simply execute `docker-compose up --build`.
 
 [//]: # (```)
 
-### Notes
-* In directory `./src/main/scripts` the file **/mysql-setup.sql** was created
-in order to create *quotes* database and *quote* table.
-Also, 4 dummy quotes have been inserted with the respected ids 1,2,3 and 4. 
+## API
+After starting the application, visit this [swagger link](http://localhost:8080/swagger-ui/index.html#/)
+in order to explore the available API endpoints.
 
-* A postman collection is included called **Quotes.postma_collection.json**.
+### Notes
+* In directory `src/main/scripts` the file **/mysql-setup.sql** was created
+in order to create *quotes_db* database.
+* In directory `src/main/resources/db/migration` exist the sql scripts that 
+handle the tables creation.
+* A postman collection and an postman environment are included, **Quotes.postma_collection.json**
+and **Quotes.postman_environment.json** respectively.

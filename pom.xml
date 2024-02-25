@@ -22,6 +22,7 @@
 		<jedis.clients.version>5.1.0</jedis.clients.version>
 		<java.jwt.version>4.3.0</java.jwt.version>
 		<jjwt.version>0.11.5</jjwt.version>
+		<spring.doc.openapi.version>2.1.0</spring.doc.openapi.version>
 	</properties>
 
 	<dependencies>
@@ -95,6 +96,12 @@
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-gson</artifactId> <!-- or jjwt-jackson if Jackson is preferred -->
 			<version>${jjwt.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${spring.doc.openapi.version}</version>
 		</dependency>
 	</dependencies>
 
