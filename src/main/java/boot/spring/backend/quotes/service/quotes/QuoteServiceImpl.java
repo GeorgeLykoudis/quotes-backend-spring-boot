@@ -65,13 +65,11 @@ public class QuoteServiceImpl implements QuoteService {
     @Transactional
     @CachePut(key = "#request.id")
     public QuoteResponseDto updateQuote(QuoteRequestDto request) throws QuoteNotFoundException {
-        if (!quoteRepository.existsById(request.getId())) {
-            throw new QuoteNotFoundException();
-        }
+        Quote savedQuote = quoteRepository.findById(request.getId()).orElseThrow(QuoteNotFoundException::new);
         LOG.info("Update quote with id {}", request.getId());
-        Quote quote = modelMapper.map(request, Quote.class);
-        Quote savedQuote = quoteRepository.save(quote);
-        return modelMapper.map(savedQuote, QuoteResponseDto.class);
+        savedQuote.setText(request.getText());
+        Quote updatedQuote = quoteRepository.save(savedQuote);
+        return modelMapper.map(updatedQuote, QuoteResponseDto.class);
     }
 
     @Override
