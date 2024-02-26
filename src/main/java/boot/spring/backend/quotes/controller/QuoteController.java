@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -44,35 +45,39 @@ public class QuoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<QuoteResponseDto> getQuoteById(@Valid @PathVariable("id") Long id) {
-        QuoteResponseDto quoteResponse = quoteService.findQuoteById(id);
+    public ResponseEntity<QuoteResponseDto> getQuoteById(@Valid @PathVariable("id") Long id,
+                                                         Principal principal) {
+        QuoteResponseDto quoteResponse = quoteService.findQuoteById(id, principal);
         return ResponseEntity.ok(quoteResponse);
     }
 
 
     @PutMapping
-    public ResponseEntity<QuoteResponseDto> updateQuote(@Valid @RequestBody QuoteRequestDto quoteRequestDto) {
-        QuoteResponseDto quoteResponse = quoteService.updateQuote(quoteRequestDto);
+    public ResponseEntity<QuoteResponseDto> updateQuote(@Valid @RequestBody QuoteRequestDto quoteRequestDto,
+                                                        Principal principal) {
+        QuoteResponseDto quoteResponse = quoteService.updateQuote(quoteRequestDto, principal);
         return ResponseEntity.ok(quoteResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteQuoteById(@Valid @PathVariable("id") Long id) {
-        quoteService.deleteById(id);
+    public ResponseEntity<Void> deleteQuoteById(@Valid @PathVariable("id") Long id,
+                                                Principal principal) {
+        quoteService.deleteById(id, principal);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<QuoteResponseDto>> findQuotes() {
-        List<QuoteResponseDto> quotes = quoteService.findAll();
+    public ResponseEntity<List<QuoteResponseDto>> findQuotes(Principal principal) {
+        List<QuoteResponseDto> quotes = quoteService.findAll(principal);
         return ResponseEntity.ok(quotes);
     }
 
     @GetMapping("/paginated")
     public ResponseEntity<QuoteResponsePaginationDto> findQuotes(
             @Valid @RequestParam(value = "p", required = false, defaultValue = "0") int page,
-            @Valid @RequestParam(value = "s", required = false, defaultValue = "5") int pageSize) {
-        QuoteResponsePaginationDto quotes = quoteService.findAll(page, pageSize);
+            @Valid @RequestParam(value = "s", required = false, defaultValue = "5") int pageSize,
+            Principal principal) {
+        QuoteResponsePaginationDto quotes = quoteService.findAll(page, pageSize, principal);
         return ResponseEntity.ok(quotes);
     }
 

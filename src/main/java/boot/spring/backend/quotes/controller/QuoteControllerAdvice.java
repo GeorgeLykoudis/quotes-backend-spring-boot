@@ -64,6 +64,11 @@ public class QuoteControllerAdvice {
     }
 
     @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<QuoteErrorResponseDto> handleException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(QuoteErrorResponseDto.of(ErrorConstants.GENERAL_EXCEPTION_MESSAGE.getCode()));
     }

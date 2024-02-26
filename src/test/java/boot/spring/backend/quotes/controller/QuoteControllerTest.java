@@ -123,7 +123,7 @@ class QuoteControllerTest {
             .text(text)
             .build();
 
-        when(service.findQuoteById(anyLong())).thenReturn(quoteResponseDto);
+        when(service.findQuoteById(anyLong(), any())).thenReturn(quoteResponseDto);
 
         mvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isOk())
@@ -135,7 +135,7 @@ class QuoteControllerTest {
     void getQuoteById_ValidRequest_ReturnsNotFound() throws Exception {
         long id = 1L;
 
-        when(service.findQuoteById(anyLong())).thenThrow(new QuoteNotFoundException());
+        when(service.findQuoteById(anyLong(), any())).thenThrow(new QuoteNotFoundException());
 
         mvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isNotFound())
@@ -147,7 +147,7 @@ class QuoteControllerTest {
     void getQuoteById_NotValidRequest_ReturnsBadRequest() throws Exception {
         long id = 1L;
 
-        when(service.findQuoteById(anyLong())).thenThrow(MethodArgumentTypeMismatchException.class);
+        when(service.findQuoteById(anyLong(), any())).thenThrow(MethodArgumentTypeMismatchException.class);
 
         mvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isBadRequest())
@@ -171,7 +171,7 @@ class QuoteControllerTest {
             .text(updatedText)
             .build();
 
-        when(service.updateQuote(any(QuoteRequestDto.class))).thenReturn(quoteResponseDto);
+        when(service.updateQuote(any(QuoteRequestDto.class), any())).thenReturn(quoteResponseDto);
 
         mvc.perform(put(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -191,7 +191,7 @@ class QuoteControllerTest {
             .text(text)
             .build();
 
-        when(service.updateQuote(any(QuoteRequestDto.class))).thenThrow(new QuoteNotFoundException());
+        when(service.updateQuote(any(QuoteRequestDto.class), any())).thenThrow(new QuoteNotFoundException());
 
         mvc.perform(put(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -205,7 +205,7 @@ class QuoteControllerTest {
     void deleteQuoteById_ValidRequest_Success() throws Exception {
         long id = 1L;
 
-        doNothing().when(service).deleteById(anyLong());
+        doNothing().when(service).deleteById(anyLong(), any());
 
         mvc.perform(delete(BASE_URL + "/{id}", id))
                 .andExpect(status().isNoContent());
@@ -215,7 +215,7 @@ class QuoteControllerTest {
     void deleteQuoteById_ValidRequest_NonExistentQuote_ThrowsQuoteNotFoundException() throws Exception {
         long id = 1L;
 
-        doThrow(new QuoteNotFoundException()).when(service).deleteById(anyLong());
+        doThrow(new QuoteNotFoundException()).when(service).deleteById(anyLong(), any());
 
         mvc.perform(delete(BASE_URL + "/{id}", id))
                 .andExpect(status().isNotFound())
@@ -227,7 +227,7 @@ class QuoteControllerTest {
     void findQuotes_Success() throws Exception {
         List<QuoteResponseDto> quoteResponseDtos = Utils.convertToQuoteResponseDtos();
 
-        when(service.findAll()).thenReturn(quoteResponseDtos);
+        when(service.findAll(any())).thenReturn(quoteResponseDtos);
 
         mvc.perform(get(BASE_URL))
                 .andExpect(status().isOk());
@@ -237,7 +237,7 @@ class QuoteControllerTest {
     void findQuotes_EmptyTable_ReturnsEmptyList() throws Exception {
         List<QuoteResponseDto> quoteResponse = new ArrayList<>();
 
-        when(service.findAll()).thenReturn(quoteResponse);
+        when(service.findAll(any())).thenReturn(quoteResponse);
 
         mvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())

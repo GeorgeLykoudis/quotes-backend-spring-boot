@@ -16,18 +16,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +50,15 @@ class QuoteServiceImplTest {
     @InjectMocks
     QuoteServiceImpl quoteService;
 
+    @Mock
+    private Principal principal;
+
+    private String defaultName = "user";
+    private UserDetails userStub = User.withDefaultPasswordEncoder()
+            .username(defaultName)
+            .password("password")
+            .roles("USER")
+            .build();
 
     @Test
     void saveQuote_Success() {
@@ -82,7 +96,8 @@ class QuoteServiceImplTest {
             .build();
 
         when(quoteRepository.findById(anyLong())).thenReturn(Optional.of(searchedQuote));
-        QuoteResponseDto result = quoteService.findQuoteById(id);
+        Principal mockedUser = mock(Principal.class);
+        QuoteResponseDto result = quoteService.findQuoteById(id, mockedUser);
 
         verify(quoteRepository, times(1)).findById(anyLong());
 
@@ -94,13 +109,13 @@ class QuoteServiceImplTest {
     @Test
     void findQuoteById_NonExistentQuote_ThrowsQuoteNotFoundException() {
         Long id = 1L;
+        Principal mockedUser = mock(Principal.class);
         when(quoteRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteResponseDto result = quoteService.findQuoteById(id);
-            verify(quoteRepository, times(1)).findById(anyLong());
-            assertNull(result);
+            quoteService.findQuoteById(id, mockedUser);
         });
+        verify(quoteRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -125,7 +140,8 @@ class QuoteServiceImplTest {
         when(quoteRepository.existsById(anyLong())).thenReturn(true);
         when(quoteRepository.save(any(Quote.class))).thenReturn(savedQuote);
 
-        QuoteResponseDto result = quoteService.updateQuote(request);
+        Principal mockedUser = mock(Principal.class);
+        QuoteResponseDto result = quoteService.updateQuote(request, mockedUser);
 
         verify(quoteRepository, times(1)).existsById(anyLong());
         verify(quoteRepository, times(1)).save(any(Quote.class));
@@ -137,14 +153,14 @@ class QuoteServiceImplTest {
     @Test
     void updateQuoteById_NonExistentQuote_ThrowsQuoteNotFoundException() {
         long id = 1L;
+        Principal mockedUser = mock(Principal.class);
 
         when(quoteRepository.existsById(anyLong())).thenReturn(false);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteResponseDto result = quoteService.updateQuote(QuoteRequestDto.builder().id(id).build());
-            verify(quoteRepository, times(1)).existsById(anyLong());
-            assertNull(result);
+            quoteService.updateQuote(QuoteRequestDto.builder().id(id).build(), mockedUser);
         });
+        verify(quoteRepository, times(1)).existsById(anyLong());
     }
 
     @Test
@@ -153,8 +169,9 @@ class QuoteServiceImplTest {
 
         when(quoteRepository.existsById(anyLong())).thenReturn(true);
         doNothing().when(quoteRepository).deleteById(anyLong());
+        Principal mockedUser = mock(Principal.class);
 
-        quoteService.deleteById(id);
+        quoteService.deleteById(id, mockedUser);
 
         verify(quoteRepository, times(1)).existsById(anyLong());
         verify(quoteRepository, times(1)).deleteById(anyLong());
@@ -163,23 +180,24 @@ class QuoteServiceImplTest {
     @Test
     void deleteQuoteById_NonExistentQuote_ThrowsQuoteNotFoundException() {
         when(quoteRepository.existsById(anyLong())).thenReturn(false);
+        Principal mockedUser = mock(Principal.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            quoteService.deleteById(anyLong());
-
-            verify(quoteRepository, times(1)).existsById(anyLong());
-            verify(quoteRepository, times(0)).deleteById(anyLong());
+            quoteService.deleteById(anyLong(), mockedUser);
         });
+        verify(quoteRepository, times(1)).existsById(anyLong());
+        verify(quoteRepository, times(0)).deleteById(anyLong());
     }
 
     @Test
     void findAll_Success() {
         List<Quote> searchedQuotes = Utils.createQuotesList();
         List<QuoteResponseDto> searchedQuoteResponseDtos = Utils.convertToQuoteResponseDtos(searchedQuotes);
+        Principal mockedPrincipal = mock(Principal.class);
 
         when(quoteRepository.findAll()).thenReturn(searchedQuotes);
 
-        List<QuoteResponseDto> result = quoteService.findAll();
+        List<QuoteResponseDto> result = quoteService.findAll(mockedPrincipal);
 
         verify(quoteRepository, times(1)).findAll();
         assertNotNull(result);
@@ -197,14 +215,18 @@ class QuoteServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     void findAll_EmptyTable_ThrowsQuoteNotFoundException() {
-        when(quoteRepository.findAll()).thenThrow(QuoteNotFoundException.class);
+        UsernamePasswordAuthenticationToken mockedPrincipal = mock(UsernamePasswordAuthenticationToken.class);
+
+        when(mockedPrincipal.getPrincipal()).thenReturn(principal);
+        when(principal.getName()).thenReturn(defaultName);
+        when(quoteRepository.findAllByCreatedBy(anyString())).thenThrow(QuoteNotFoundException.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            List<QuoteResponseDto> quotes = quoteService.findAll();
-            verify(quoteRepository.findAll(), times(1));
-            assertNull(quotes);
+            quoteService.findAll(principal);
         });
+        verify(quoteRepository.findAllByCreatedBy(anyString()), times(1));
     }
 
     @Test
@@ -216,9 +238,10 @@ class QuoteServiceImplTest {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Quote> pageQuotes = new PageImpl<>(searchedQuotes, pageable, searchedQuotes.size());
 
+        Principal mockedUser = mock(Principal.class);
         when(quoteRepository.findAll(any(Pageable.class))).thenReturn(pageQuotes);
 
-        QuoteResponsePaginationDto result = quoteService.findAll(page, pageSize);
+        QuoteResponsePaginationDto result = quoteService.findAll(page, pageSize, mockedUser);
 
         verify(quoteRepository, times(1)).findAll(any(Pageable.class));
         assertNotNull(result);
@@ -228,12 +251,12 @@ class QuoteServiceImplTest {
     @Test
     void findAll_Paginated_EmptyResponse_ThrowsQuoteNotFoundException() {
         when(quoteRepository.findAll(any(Pageable.class))).thenThrow(QuoteNotFoundException.class);
+        Principal mockedUser = mock(Principal.class);
 
         assertThrows(QuoteNotFoundException.class, () -> {
-            QuoteResponsePaginationDto result = quoteService.findAll(0, 1);
-            verify(quoteRepository, times(1)).findAll(any(Pageable.class));
-            assertNull(result);
+            quoteService.findAll(0, 1, mockedUser);
         });
+        verify(quoteRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test

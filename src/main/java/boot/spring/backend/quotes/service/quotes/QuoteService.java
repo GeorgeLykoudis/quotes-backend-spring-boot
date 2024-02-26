@@ -6,6 +6,7 @@ import boot.spring.backend.quotes.dto.quotes.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -15,15 +16,15 @@ import java.util.List;
 public interface QuoteService {
     QuoteResponseDto saveQuote(QuoteRequestDto quoteRequestDto) throws QuoteAlreadyExistException;
 
-    QuoteResponseDto findQuoteById(Long id) throws QuoteNotFoundException;
+    QuoteResponseDto findQuoteById(Long id, Principal principal) throws QuoteNotFoundException, IllegalArgumentException;
 
-    QuoteResponseDto updateQuote(QuoteRequestDto quoteRequestDto) throws QuoteNotFoundException;
+    QuoteResponseDto updateQuote(QuoteRequestDto quoteRequestDto, Principal principal) throws QuoteNotFoundException, IllegalArgumentException;
 
-    void deleteById(Long id) throws QuoteNotFoundException;
+    void deleteById(Long id, Principal principal) throws QuoteNotFoundException, IllegalArgumentException;
 
-    List<QuoteResponseDto> findAll();
+    List<QuoteResponseDto> findAll(Principal principal) throws IllegalArgumentException;
 
-    QuoteResponsePaginationDto findAll(int page, int pageSize);
+    QuoteResponsePaginationDto findAll(int page, int pageSize, Principal principal) throws IllegalArgumentException;
 
     QuoteResponseDto findRandomQuote();
 

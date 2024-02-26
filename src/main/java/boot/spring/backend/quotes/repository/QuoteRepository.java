@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author George Lykoudis
@@ -24,4 +25,12 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
     @Query(value = "SELECT * FROM quotes ORDER BY RAND() LIMIT 1;", nativeQuery = true)
     Quote findRandomQuote();
+
+    List<Quote> findAllByCreatedBy(String username);
+
+    Page<Quote> findAllByCreatedBy(Pageable pageable, String username);
+
+    Optional<Quote> findByIdAndCreatedBy(Long id, String username);
+
+    boolean existsByIdAndCreatedBy(Long id, String username);
 }

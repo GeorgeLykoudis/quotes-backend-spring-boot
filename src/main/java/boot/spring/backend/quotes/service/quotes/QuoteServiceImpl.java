@@ -6,6 +6,7 @@ import boot.spring.backend.quotes.dto.quotes.QuoteResponsePaginationDto;
 import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
 import boot.spring.backend.quotes.model.Quote;
+import boot.spring.backend.quotes.model.User;
 import boot.spring.backend.quotes.repository.QuoteRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -17,9 +18,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.List;
 
 import static boot.spring.backend.quotes.service.cache.CacheConstants.QUOTE_CACHE;
@@ -41,9 +44,11 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @Cacheable(key = "#id")
-    public QuoteResponseDto findQuoteById(Long id) throws QuoteNotFoundException {
+    public QuoteResponseDto findQuoteById(Long id, Principal principal)
+            throws QuoteNotFoundException, IllegalArgumentException {
         LOG.info("Find quote by id {}", id);
-        Quote quote = quoteRepository.findById(id).orElseThrow(QuoteNotFoundException::new);
+        var user = getUser(principal);
+        Quote quote = quoteRepository.findByIdAndCreatedBy(id, user.getUsername()).orElseThrow(QuoteNotFoundException::new);
         return modelMapper.map(quote, QuoteResponseDto.class);
     }
 
@@ -64,8 +69,11 @@ public class QuoteServiceImpl implements QuoteService {
     @Override
     @Transactional
     @CachePut(key = "#request.id")
-    public QuoteResponseDto updateQuote(QuoteRequestDto request) throws QuoteNotFoundException {
-        Quote savedQuote = quoteRepository.findById(request.getId()).orElseThrow(QuoteNotFoundException::new);
+    public QuoteResponseDto updateQuote(QuoteRequestDto request, Principal principal)
+            throws QuoteNotFoundException, IllegalArgumentException {
+        var user = getUser(principal);
+        Quote savedQuote = quoteRepository.findByIdAndCreatedBy(request.getId(), user.getUsername())
+                .orElseThrow(QuoteNotFoundException::new);
         LOG.info("Update quote with id {}", request.getId());
         savedQuote.setText(request.getText());
         Quote updatedQuote = quoteRepository.save(savedQuote);
@@ -74,8 +82,9 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     @CacheEvict(key = "#id")
-    public void deleteById(Long id) throws QuoteNotFoundException {
-        if (!quoteRepository.existsById(id)) {
+    public void deleteById(Long id, Principal principal) throws QuoteNotFoundException, IllegalArgumentException {
+        var user = getUser(principal);
+        if (!quoteRepository.existsByIdAndCreatedBy(id, user.getUsername())) {
             throw new QuoteNotFoundException();
         }
         LOG.info("Delete quote with id {}", id);
@@ -83,16 +92,18 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    public List<QuoteResponseDto> findAll() {
-        List<Quote> quotes = quoteRepository.findAll();
+    public List<QuoteResponseDto> findAll(Principal principal) throws IllegalArgumentException {
+        var user = getUser(principal);
+        List<Quote> quotes = quoteRepository.findAllByCreatedBy(user.getUsername());
         return convertToQuoteResponseDtos(quotes);
     }
 
     @Override
     @Cacheable(key = "{#page, #pageSize}")
-    public QuoteResponsePaginationDto findAll(int page, int pageSize) {
+    public QuoteResponsePaginationDto findAll(int page, int pageSize, Principal principal) {
+        var user = getUser(principal);
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<Quote> quotePage = quoteRepository.findAll(pageable);
+        Page<Quote> quotePage = quoteRepository.findAllByCreatedBy(pageable, user.getUsername());
         return createPaginationResponse(quotePage);
     }
 
@@ -130,5 +141,13 @@ public class QuoteServiceImpl implements QuoteService {
         List<Quote> content = quotes.getContent();
         response.setQuotes(convertToQuoteResponseDtos(content));
         return response;
+    }
+
+    private User getUser(Principal principal) throws IllegalArgumentException {
+        var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        if (user == null) {
+            throw new IllegalArgumentException("User principal cannot be null");
+        }
+        return user;
     }
 }
