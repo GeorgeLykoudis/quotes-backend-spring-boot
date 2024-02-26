@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.security.Principal;
 import java.util.List;
@@ -215,7 +214,6 @@ class QuoteServiceImplTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     void findAll_EmptyTable_ThrowsQuoteNotFoundException() {
         UsernamePasswordAuthenticationToken mockedPrincipal = mock(UsernamePasswordAuthenticationToken.class);
 
