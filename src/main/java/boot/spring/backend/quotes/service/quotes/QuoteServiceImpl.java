@@ -135,6 +135,9 @@ public class QuoteServiceImpl implements QuoteService {
 
     private QuoteResponsePaginationDto createPaginationResponse(Page<Quote> quotes) {
         QuoteResponsePaginationDto response = new QuoteResponsePaginationDto();
+        if (quotes.isEmpty()) {
+            return new QuoteResponsePaginationDto();
+        }
         Pageable pageable = quotes.getPageable();
         response.setPage(pageable.getPageNumber());
         response.setPageSize(pageable.getPageSize());

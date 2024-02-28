@@ -23,10 +23,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -131,21 +133,22 @@ class QuoteServiceImplTest {
 
         QuoteRequestDto request = QuoteRequestDto.builder()
             .id(id)
-            .text(text)
+            .text(updatedText)
             .build();
 
         Quote savedQuote = Quote.builder()
             .id(id)
             .createdBy(createdBy)
-            .text(updatedText)
+            .text(text)
             .build();
 
-        when(quoteRepository.existsByIdAndCreatedBy(anyLong(), anyString())).thenReturn(true);
+        when(quoteRepository.findByIdAndCreatedBy(anyLong(), anyString())).thenReturn(Optional.of(savedQuote));
+        savedQuote.setText(updatedText);
         when(quoteRepository.save(any(Quote.class))).thenReturn(savedQuote);
 
         QuoteResponseDto result = quoteService.updateQuote(request);
 
-        verify(quoteRepository, times(1)).existsByIdAndCreatedBy(anyLong(), anyString());
+        verify(quoteRepository, times(1)).findByIdAndCreatedBy(anyLong(), anyString());
         verify(quoteRepository, times(1)).save(any(Quote.class));
         assertNotNull(result);
         assertEquals(id, result.getId());
@@ -157,12 +160,12 @@ class QuoteServiceImplTest {
         long id = 1L;
         initSecurityContext();
 
-        when(quoteRepository.existsByIdAndCreatedBy(anyLong(), anyString())).thenReturn(false);
+        when(quoteRepository.findByIdAndCreatedBy(anyLong(), anyString())).thenReturn(Optional.empty());
 
         assertThrows(QuoteNotFoundException.class, () -> {
             quoteService.updateQuote(QuoteRequestDto.builder().id(id).build());
         });
-        verify(quoteRepository, times(1)).existsByIdAndCreatedBy(anyLong(), anyString());
+        verify(quoteRepository, times(1)).findByIdAndCreatedBy(anyLong(), anyString());
     }
 
     @Test
@@ -184,11 +187,9 @@ class QuoteServiceImplTest {
         initSecurityContext();
         when(quoteRepository.existsByIdAndCreatedBy(anyLong(), any())).thenReturn(false);
 
-        assertThrows(QuoteNotFoundException.class, () -> {
-            quoteService.deleteById(anyLong());
-        });
+        assertThrows(QuoteNotFoundException.class, () -> quoteService.deleteById(1L));
         verify(quoteRepository, times(1)).existsByIdAndCreatedBy(anyLong(), anyString());
-        verify(quoteRepository, times(0)).deleteById(anyLong());
+        verify(quoteRepository, never()).deleteById(anyLong());
     }
 
     @Test
@@ -197,11 +198,11 @@ class QuoteServiceImplTest {
         List<QuoteResponseDto> searchedQuoteResponseDtos = Utils.convertToQuoteResponseDtos(searchedQuotes);
         initSecurityContext();
 
-        when(quoteRepository.findAll()).thenReturn(searchedQuotes);
+        when(quoteRepository.findAllByCreatedBy(anyString())).thenReturn(searchedQuotes);
 
         List<QuoteResponseDto> result = quoteService.findAll();
 
-        verify(quoteRepository, times(1)).findAll();
+        verify(quoteRepository, times(1)).findAllByCreatedBy(anyString());
         assertNotNull(result);
         assertEquals(searchedQuotes.size(), result.size());
 
@@ -217,14 +218,14 @@ class QuoteServiceImplTest {
     }
 
     @Test
-    void findAll_EmptyTable_ThrowsQuoteNotFoundException() {
+    void findAll_NoQuotes_ReturnEmptyList() {
         initSecurityContext();
-        when(quoteRepository.findAllByCreatedBy(anyString())).thenThrow(QuoteNotFoundException.class);
+        when(quoteRepository.findAllByCreatedBy(anyString())).thenReturn(Collections.emptyList());
 
-        assertThrows(QuoteNotFoundException.class, () -> {
-            quoteService.findAll();
-        });
-        verify(quoteRepository.findAllByCreatedBy(anyString()), times(1));
+        List<QuoteResponseDto> quotes = quoteService.findAll();
+
+        verify(quoteRepository, times(1)).findAllByCreatedBy(anyString());
+        assertThat(quotes).isEmpty();
     }
 
     @Test
@@ -240,7 +241,7 @@ class QuoteServiceImplTest {
 
         QuoteResponsePaginationDto result = quoteService.findAll(page, pageSize);
 
-        verify(quoteRepository, times(1)).findAll(any(Pageable.class));
+        verify(quoteRepository, times(1)).findAllByCreatedBy(any(Pageable.class), anyString());
         assertNotNull(result);
         assertEquals(searchedQuotes.size(), result.getQuotes().size());
     }
@@ -248,12 +249,13 @@ class QuoteServiceImplTest {
     @Test
     void findAll_Paginated_EmptyResponse_ThrowsQuoteNotFoundException() {
         initSecurityContext();
-        when(quoteRepository.findAllByCreatedBy(any(Pageable.class), anyString())).thenThrow(QuoteNotFoundException.class);
+        when(quoteRepository.findAllByCreatedBy(any(Pageable.class), anyString())).thenReturn(Page.empty());
 
-        assertThrows(QuoteNotFoundException.class, () -> {
-            quoteService.findAll(0, 1);
-        });
-        verify(quoteRepository, times(1)).findAll(any(Pageable.class));
+        QuoteResponsePaginationDto pagedQuotes = quoteService.findAll(0, 1);
+
+        verify(quoteRepository, times(1)).findAllByCreatedBy(any(Pageable.class), anyString());
+        assertThat(pagedQuotes).isNotNull();
+        assertThat(pagedQuotes.getQuotes()).isNull();
     }
 
     @Test
