@@ -1,13 +1,23 @@
 package boot.spring.backend.quotes.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 public class RegisterRequest {
+    @NotNull
+    @NotEmpty
     private String username;
+    @NotNull
+    @NotEmpty
     private String password;
+    @NotNull
+    @NotEmpty
     private String firstName;
+    @NotNull
+    @NotEmpty
     private String lastName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate birthDate;

@@ -6,9 +6,12 @@ import boot.spring.backend.quotes.exception.ErrorConstants;
 import boot.spring.backend.quotes.exception.QuoteAlreadyExistException;
 import boot.spring.backend.quotes.exception.QuoteInternalException;
 import boot.spring.backend.quotes.exception.QuoteNotFoundException;
+import boot.spring.backend.quotes.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -61,6 +64,21 @@ public class QuoteControllerAdvice {
     @ExceptionHandler(ChangePasswordException.class)
     public ResponseEntity<Void> handleChangePasswordException(ChangePasswordException e) {
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<UsernameNotFoundException> handleUsernameNotFoundException(UsernameNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Void> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public ResponseEntity<UsernameNotFoundException> handleInternalAuthenticationServiceException(InternalAuthenticationServiceException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @ExceptionHandler(Exception.class)

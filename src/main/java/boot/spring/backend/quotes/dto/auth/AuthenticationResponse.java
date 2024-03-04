@@ -26,19 +26,19 @@ public class AuthenticationResponse {
         this.refreshToken = refreshToken;
     }
 
-    public static LoginResponseBuilder builder() {
-        return new LoginResponseBuilder();
+    public static AuthenticationResponseBuilder builder() {
+        return new AuthenticationResponseBuilder();
     }
 
-    public static class LoginResponseBuilder {
+    public static class AuthenticationResponseBuilder {
         private final AuthenticationResponse instance = new AuthenticationResponse();
 
-        public LoginResponseBuilder accessToken(String accessToken) {
+        public AuthenticationResponseBuilder accessToken(String accessToken) {
             this.instance.accessToken = accessToken;
             return this;
         }
 
-        public LoginResponseBuilder refreshToken(String refreshToken) {
+        public AuthenticationResponseBuilder refreshToken(String refreshToken) {
             this.instance.refreshToken = refreshToken;
             return this;
         }

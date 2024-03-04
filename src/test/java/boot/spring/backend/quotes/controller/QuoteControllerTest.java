@@ -248,7 +248,6 @@ class QuoteControllerTest {
     void findRandomQuote_Success() throws Exception {
         long id = 1L;
         String text = "test";
-        String author = "author";
 
         QuoteResponseDto quote = QuoteResponseDto.builder()
             .id(id)
@@ -264,24 +263,14 @@ class QuoteControllerTest {
     }
 
     @Test
-    void findRandomQuote_EmptyTable_ThrowsQuoteTableEmptyException() throws Exception {
+    void findRandomQuote_EmptyTable_ReturnsEmptyBody() throws Exception {
 
-        when(service.findRandomQuote()).thenThrow(new QuoteNotFoundException());
-
-        mvc.perform(get(BASE_URL + "/random"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
-                    .value(ErrorConstants.QUOTE_NOT_FOUND.getCode()));
-    }
-
-    @Test
-    void findRandomQuote_CouldNotFindQuote_ThrowsQuoteNotFoundException() throws Exception {
-        when(service.findRandomQuote()).thenThrow(new QuoteNotFoundException());
+        when(service.findRandomQuote()).thenReturn(QuoteResponseDto.builder().build());
 
         mvc.perform(get(BASE_URL + "/random"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath(ERROR_CODE_RESPONSE_KEY)
-                    .value(ErrorConstants.QUOTE_NOT_FOUND.getCode()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isEmpty())
+                .andExpect(jsonPath("$.text").isEmpty());
     }
 
     @Test

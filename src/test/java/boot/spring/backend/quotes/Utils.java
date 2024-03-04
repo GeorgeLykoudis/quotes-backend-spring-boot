@@ -2,9 +2,15 @@ package boot.spring.backend.quotes;
 
 import boot.spring.backend.quotes.dto.quotes.QuoteResponseDto;
 import boot.spring.backend.quotes.model.Quote;
+import boot.spring.backend.quotes.model.User;
+import boot.spring.backend.quotes.model.security.Role;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +23,15 @@ public class Utils {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final ModelMapper modelMapper = new ModelMapper();
+    private static SecurityContext mockSecurityContext;
+    private static SecurityContextHolder securityContextHolder;
+    public static final User userStub = User
+        .builder()
+        .id(1L)
+        .email("user")
+        .password("password")
+        .role(Role.USER)
+        .build();
 
     public <T> T readJson(String content, Class<T> clazz) throws Exception {
         return objectMapper.readValue(content, clazz);
@@ -59,5 +74,13 @@ public class Utils {
         return quotes.stream()
                 .map(quote -> modelMapper.map(quote, QuoteResponseDto.class))
                 .toList();
+    }
+
+    public static void initValidSecurityContext() {
+        mockSecurityContext = SecurityContextHolder.createEmptyContext();
+        Authentication authentication =
+            new UsernamePasswordAuthenticationToken(userStub, null, userStub.getAuthorities());
+        mockSecurityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(mockSecurityContext);
     }
 }

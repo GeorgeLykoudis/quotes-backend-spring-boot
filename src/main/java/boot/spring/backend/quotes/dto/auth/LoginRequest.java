@@ -1,8 +1,16 @@
 package boot.spring.backend.quotes.dto.auth;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class LoginRequest {
 
+    @NotNull
+    @NotEmpty
     private String username;
+
+    @NotNull
+    @NotEmpty
     private String password;
 
     public String getUsername() {
